@@ -1,43 +1,144 @@
-import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronRightIcon,
-  LogoutIcon,
-  WalletIcon,
-} from "../components/Icon";
-import {
-  moneyOperations,
-  products,
-  sales,
-  storages,
-} from "../data/mock";
-import { formatMoney, formatTime } from "../utils/format";
+import { LogoutIcon } from "../components/Icon";
+import { DonutChart } from "../components/charts/DonutChart";
+import { LineChart } from "../components/charts/LineChart";
+
+type Period = "week" | "month" | "year";
+
+const periodTabs: { id: Period; label: string }[] = [
+  { id: "week", label: "Неделя" },
+  { id: "month", label: "Месяц" },
+  { id: "year", label: "Год" },
+];
+
+const palette = {
+  cash: "#3FBDFF",
+  storage: "#22C55E",
+  debt: "#F59E0B",
+  liability: "#EF4444",
+  total: "#8B5CF6",
+  income: "#3FBDFF",
+  sales: "#22C55E",
+  expense: "#EF4444",
+};
+
+const cashRegisters = [
+  { id: 1, name: "Касса №1", balance: 0, currency: "TJS" },
+  { id: 2, name: "test", balance: 0, currency: "TJS" },
+];
+
+const seriesByPeriod: Record<
+  Period,
+  {
+    weekdays: string[];
+    turnover: { income: number[]; sales: number[]; expense: number[] };
+    income: { current: number[]; previous: number[] };
+    sales: { current: number[]; previous: number[] };
+  }
+> = {
+  week: {
+    weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
+    turnover: {
+      income: [0, 0, 0, 0, 0, 0, 0],
+      sales: [0, 0, 0, 0, 0, 20.3, 0],
+      expense: [0, 0, 0, 0, 0, 0, 0],
+    },
+    income: {
+      current: [0, 0, 0, 0, 0, 0, 0],
+      previous: [0, 0, 0, 0, 0, 0, 0],
+    },
+    sales: {
+      current: [0, 0, 0, 0, 0, 20.3, 0],
+      previous: [0, 0, 0, 0, 0, 0, 0],
+    },
+  },
+  month: {
+    weekdays: ["Н1", "Н2", "Н3", "Н4"],
+    turnover: {
+      income: [0, 0, 0, 0],
+      sales: [0, 12.5, 18.4, 20.3],
+      expense: [0, 0, 0, 0],
+    },
+    income: {
+      current: [0, 0, 0, 0],
+      previous: [0, 0, 0, 0],
+    },
+    sales: {
+      current: [0, 12.5, 18.4, 20.3],
+      previous: [0, 0, 5.2, 8.4],
+    },
+  },
+  year: {
+    weekdays: ["Я", "Ф", "М", "А", "М", "И", "И", "А", "С", "О", "Н", "Д"],
+    turnover: {
+      income: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      sales: [0, 0, 0, 0, 20.3, 0, 0, 0, 0, 0, 0, 0],
+      expense: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    },
+    income: {
+      current: Array(12).fill(0),
+      previous: Array(12).fill(0),
+    },
+    sales: {
+      current: [0, 0, 0, 0, 20.3, 0, 0, 0, 0, 0, 0, 0],
+      previous: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    },
+  },
+};
+
+const assets = [
+  { label: "Общая сумма в кассах", value: 0, color: palette.cash },
+  {
+    label: "Общий объем на складах",
+    value: 11990,
+    color: palette.storage,
+  },
+  {
+    label: "Задолженность контрагентов",
+    value: 20.3,
+    color: palette.debt,
+  },
+  {
+    label: "Краткосрочные обязательства",
+    value: 0,
+    color: palette.liability,
+  },
+];
+
+function formatNumber(v: number) {
+  return v.toLocaleString("ru-RU", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+function todayLabel() {
+  const d = new Date();
+  const w = d.toLocaleDateString("ru-RU", { weekday: "long" });
+  const day = d.getDate();
+  const month = d.toLocaleDateString("ru-RU", { month: "long" });
+  return `Сегодня, ${w} ${day} ${month}`;
+}
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
+  const [period, setPeriod] = useState<Period>("week");
 
-  const todayIncome = moneyOperations
-    .filter((o) => o.type === "income")
-    .reduce((s, o) => s + o.amount, 0);
-  const todayExpense = moneyOperations
-    .filter((o) => o.type === "expense")
-    .reduce((s, o) => s + o.amount, 0);
-  const lowStock = products.filter((p) => p.stock <= 12).length;
-  const totalStorageValue = storages.reduce(
-    (s, st) => s + st.totalValue,
-    0
+  const data = seriesByPeriod[period];
+
+  const totalAssets = useMemo(
+    () => assets.reduce((s, a) => s + a.value, 0),
+    []
   );
-  const recentSales = sales.slice(0, 3);
 
   return (
     <div>
-      <div className="px-5 pt-12 pb-10 bg-brand-grad text-white rounded-b-[28px]">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="text-white/80 text-sm">Добрый день</div>
-            <div className="text-xl font-semibold mt-0.5 truncate">
+      <header className="px-5 pt-12 pb-6 bg-brand-grad text-white rounded-b-[24px]">
+        <div className="row">
+          <div className="min-w-0">
+            <div className="text-white/80 text-xs">Аккаунт</div>
+            <div className="text-base font-medium truncate">
               {user?.email ?? "Гость"}
             </div>
           </div>
@@ -49,178 +150,228 @@ export default function DashboardPage() {
             <LogoutIcon size={18} />
           </button>
         </div>
+        <div className="text-white text-lg font-semibold mt-3">
+          {todayLabel()}
+        </div>
+      </header>
 
-        <div className="mt-6 bg-white/10 backdrop-blur rounded-card p-4 border border-white/15">
-          <div className="text-white/80 text-xs uppercase tracking-wide">
-            Касса сегодня
-          </div>
-          <div className="text-2xl font-semibold mt-1">
-            {formatMoney(todayIncome - todayExpense)}
-          </div>
-          <div className="grid grid-cols-2 gap-3 mt-4 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="w-7 h-7 grid place-items-center rounded-full bg-white/20">
-                <ArrowUpIcon size={14} />
-              </span>
-              <div>
-                <div className="text-white/80 text-[11px]">Доход</div>
-                <div className="font-medium">{formatMoney(todayIncome)}</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-7 h-7 grid place-items-center rounded-full bg-white/20">
-                <ArrowDownIcon size={14} />
-              </span>
-              <div>
-                <div className="text-white/80 text-[11px]">Расход</div>
-                <div className="font-medium">{formatMoney(todayExpense)}</div>
-              </div>
-            </div>
-          </div>
+      <div className="px-5 -mt-4">
+        <div className="card p-1 grid grid-cols-3 gap-1 bg-white">
+          {periodTabs.map((t) => {
+            const active = t.id === period;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setPeriod(t.id)}
+                className={`h-9 rounded-btn text-sm font-medium transition ${
+                  active
+                    ? "bg-brand-500 text-white shadow-card"
+                    : "text-ink-500"
+                }`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="px-5 -mt-6 grid grid-cols-2 gap-3">
-        <StatCard
-          title="Склад"
-          value={formatMoney(totalStorageValue)}
-          subtitle={`${storages.length} точек`}
-        />
-        <StatCard
-          title="Низкий остаток"
-          value={`${lowStock} SKU`}
-          subtitle="требует внимания"
-          tone={lowStock > 0 ? "warn" : "ok"}
-        />
-      </div>
+      <section className="px-5 mt-4">
+        <div className="card">
+          <div className="flex items-center justify-center">
+            <DonutChart
+              segments={assets}
+              size={180}
+              thickness={22}
+              centerLabel={formatNumber(totalAssets)}
+              centerSubtitle="Всего активов"
+            />
+          </div>
+          <ul className="mt-4 flex flex-col gap-2.5">
+            {assets.map((a) => (
+              <li key={a.label} className="flex items-center gap-2 text-sm">
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ background: a.color }}
+                />
+                <span className="text-ink-700 flex-1 min-w-0 truncate">
+                  {a.label}
+                </span>
+                <span className="font-semibold text-ink-900 tabular-nums">
+                  {formatNumber(a.value)}
+                </span>
+              </li>
+            ))}
+            <li className="flex items-center gap-2 text-sm pt-2 border-t border-ink-300/30">
+              <span
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: palette.total }}
+              />
+              <span className="text-ink-700 flex-1 font-medium">
+                Всего активов
+              </span>
+              <span className="font-semibold text-ink-900 tabular-nums">
+                {formatNumber(totalAssets)}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </section>
 
-      <section className="px-5 mt-6">
-        <SectionHeader title="Быстрые действия" />
-        <div className="grid grid-cols-2 gap-3 mt-3">
-          <QuickAction to="/operations/money" label="Деньги" icon="wallet" />
-          <QuickAction to="/operations/sales" label="Продажи" icon="up" />
-          <QuickAction
-            to="/operations/purchases"
-            label="Закупки"
-            icon="down"
+      <section className="px-5 mt-4">
+        <div className="card">
+          <div className="row mb-3">
+            <div className="font-semibold text-ink-900">Кассы</div>
+            <div className="text-xs text-ink-500">Средства</div>
+          </div>
+          <ul className="divide-y divide-ink-300/30">
+            {cashRegisters.map((r) => (
+              <li key={r.id} className="py-2.5 row">
+                <span className="text-ink-700">{r.name}</span>
+                <span className="flex items-center gap-2">
+                  <span className="font-semibold text-ink-900 tabular-nums">
+                    {formatNumber(r.balance)}
+                  </span>
+                  <span className="chip bg-brand-50 text-brand-600">
+                    {r.currency}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="px-5 mt-4">
+        <div className="card">
+          <div className="font-semibold text-ink-900 text-center mb-2">
+            Оборот
+          </div>
+          <LineChart
+            categories={data.weekdays}
+            series={[
+              {
+                name: "Приход",
+                color: palette.income,
+                points: data.turnover.income,
+              },
+              {
+                name: "Реализация",
+                color: palette.sales,
+                points: data.turnover.sales,
+              },
+              {
+                name: "Расход",
+                color: palette.expense,
+                points: data.turnover.expense,
+              },
+            ]}
           />
-          <QuickAction
-            to="/operations/transfers"
-            label="Переводы"
-            icon="swap"
+          <Legend
+            items={[
+              { label: "Приход", color: palette.income },
+              { label: "Реализация", color: palette.sales },
+              { label: "Расход", color: palette.expense },
+            ]}
           />
         </div>
       </section>
 
-      <section className="px-5 mt-6">
-        <SectionHeader
-          title="Последние продажи"
-          action={{ to: "/operations/sales", label: "Все" }}
-        />
-        <div className="card mt-3 divide-y divide-ink-300/30 p-0">
-          {recentSales.map((s) => (
-            <div key={s.id} className="px-4 py-3 row">
-              <div className="min-w-0">
-                <div className="font-medium text-ink-900 truncate">
-                  {s.number} · {s.client}
-                </div>
-                <div className="text-xs text-ink-500 mt-0.5">
-                  {formatTime(s.date)} · {s.status}
-                </div>
-              </div>
-              <div className="font-semibold text-ink-900">
-                {formatMoney(s.amount, s.currency)}
-              </div>
-            </div>
-          ))}
+      <section className="px-5 mt-4">
+        <div className="card">
+          <div className="font-semibold text-ink-900 text-center mb-2">
+            Приход
+          </div>
+          <LineChart
+            categories={data.weekdays}
+            series={[
+              {
+                name: "Динамика",
+                color: palette.income,
+                points: data.income.current,
+              },
+              {
+                name: "Прошлая неделя",
+                color: palette.income,
+                points: data.income.previous,
+                dashed: true,
+              },
+            ]}
+          />
+          <Legend
+            items={[
+              { label: "Динамика за неделю", color: palette.income },
+              {
+                label: "Сравнение с прошлой неделей",
+                color: palette.income,
+                dashed: true,
+              },
+            ]}
+          />
+        </div>
+      </section>
+
+      <section className="px-5 mt-4">
+        <div className="card">
+          <div className="font-semibold text-ink-900 text-center mb-2">
+            Реализация
+          </div>
+          <LineChart
+            categories={data.weekdays}
+            series={[
+              {
+                name: "Динамика",
+                color: palette.sales,
+                points: data.sales.current,
+              },
+              {
+                name: "Прошлая неделя",
+                color: palette.sales,
+                points: data.sales.previous,
+                dashed: true,
+              },
+            ]}
+          />
+          <Legend
+            items={[
+              { label: "Динамика за неделю", color: palette.sales },
+              {
+                label: "Сравнение с прошлой неделей",
+                color: palette.sales,
+                dashed: true,
+              },
+            ]}
+          />
         </div>
       </section>
     </div>
   );
 }
 
-function StatCard({
-  title,
-  value,
-  subtitle,
-  tone = "default",
-}: {
-  title: string;
-  value: string;
-  subtitle?: string;
-  tone?: "default" | "warn" | "ok";
-}) {
-  const dot =
-    tone === "warn"
-      ? "bg-warning"
-      : tone === "ok"
-        ? "bg-success"
-        : "bg-brand-400";
-  return (
-    <div className="card">
-      <div className="flex items-center gap-2">
-        <span className={`w-2 h-2 rounded-full ${dot}`} />
-        <div className="text-xs text-ink-500">{title}</div>
-      </div>
-      <div className="text-lg font-semibold mt-1 text-ink-900 truncate">
-        {value}
-      </div>
-      {subtitle && (
-        <div className="text-xs text-ink-400 mt-0.5">{subtitle}</div>
-      )}
-    </div>
-  );
-}
+type LegendItem = { label: string; color: string; dashed?: boolean };
 
-function SectionHeader({
-  title,
-  action,
-}: {
-  title: string;
-  action?: { to: string; label: string };
-}) {
+function Legend({ items }: { items: LegendItem[] }) {
   return (
-    <div className="row">
-      <div className="font-semibold text-ink-900">{title}</div>
-      {action && (
-        <Link
-          to={action.to}
-          className="text-sm text-brand-500 inline-flex items-center gap-0.5"
+    <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5">
+      {items.map((it) => (
+        <li
+          key={it.label}
+          className="flex items-center gap-1.5 text-[11px] text-ink-500"
         >
-          {action.label}
-          <ChevronRightIcon size={14} />
-        </Link>
-      )}
-    </div>
-  );
-}
-
-function QuickAction({
-  to,
-  label,
-  icon,
-}: {
-  to: string;
-  label: string;
-  icon: "wallet" | "up" | "down" | "swap";
-}) {
-  const Icon =
-    icon === "wallet"
-      ? WalletIcon
-      : icon === "up"
-        ? ArrowUpIcon
-        : icon === "down"
-          ? ArrowDownIcon
-          : ChevronRightIcon;
-  return (
-    <Link
-      to={to}
-      className="card flex items-center gap-3 active:bg-surface-muted"
-    >
-      <span className="w-10 h-10 rounded-full grid place-items-center bg-brand-50 text-brand-500">
-        <Icon size={20} />
-      </span>
-      <div className="font-medium text-ink-900">{label}</div>
-    </Link>
+          {it.dashed ? (
+            <span
+              className="inline-block w-4 h-0 border-t-2 border-dashed"
+              style={{ borderColor: it.color }}
+            />
+          ) : (
+            <span
+              className="inline-block w-2.5 h-2.5 rounded-full"
+              style={{ background: it.color }}
+            />
+          )}
+          {it.label}
+        </li>
+      ))}
+    </ul>
   );
 }
