@@ -156,17 +156,15 @@ export default function DashboardPage() {
       </header>
 
       <div className="px-5 -mt-4">
-        <div className="card p-1 grid grid-cols-3 gap-1 bg-white">
+        <div className="glass-segmented grid grid-cols-3 gap-1">
           {periodTabs.map((t) => {
             const active = t.id === period;
             return (
               <button
                 key={t.id}
                 onClick={() => setPeriod(t.id)}
-                className={`h-9 rounded-btn text-sm font-medium transition ${
-                  active
-                    ? "bg-brand-500 text-white shadow-card"
-                    : "text-ink-500"
+                className={`glass-segmented-item ${
+                  active ? "glass-segmented-item--active" : ""
                 }`}
               >
                 {t.label}

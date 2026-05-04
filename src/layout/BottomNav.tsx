@@ -24,32 +24,38 @@ const tabs: Tab[] = [
 
 export function BottomNav() {
   return (
-    <nav
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white shadow-nav border-t border-ink-300/30 z-20"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    <div
+      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-20 pointer-events-none"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
     >
-      <ul className="grid grid-cols-5 h-16">
-        {tabs.map(({ to, label, Icon }) => (
-          <li key={to} className="flex">
-            <NavLink
-              to={to}
-              end={to === "/"}
-              className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center gap-0.5 text-[11px] ${
-                  isActive ? "text-brand-500" : "text-ink-400"
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon size={22} strokeWidth={isActive ? 2 : 1.7} />
-                  <span className={isActive ? "font-medium" : ""}>{label}</span>
-                </>
-              )}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
-    </nav>
+      <nav className="liquid-glass mx-4 pointer-events-auto">
+        <ul className="relative grid grid-cols-5 h-[64px] px-1.5">
+          {tabs.map(({ to, label, Icon }) => (
+            <li key={to} className="flex">
+              <NavLink
+                to={to}
+                end={to === "/"}
+                className={({ isActive }) =>
+                  `flex-1 mx-0.5 my-1.5 rounded-2xl flex flex-col items-center justify-center gap-0.5 text-[11px] transition-all duration-200 ${
+                    isActive
+                      ? "text-brand-600 bg-white/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_4px_12px_rgba(31,144,224,0.18)]"
+                      : "text-ink-500 active:bg-white/30"
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon size={22} strokeWidth={isActive ? 2 : 1.7} />
+                    <span className={isActive ? "font-semibold" : "font-medium"}>
+                      {label}
+                    </span>
+                  </>
+                )}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
   );
 }

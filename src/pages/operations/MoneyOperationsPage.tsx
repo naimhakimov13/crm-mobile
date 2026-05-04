@@ -108,8 +108,8 @@ export default function MoneyOperationsPage() {
             onClick={() => setFilter(t.id)}
             className={`shrink-0 chip ${
               filter === t.id
-                ? "bg-brand-500 text-white"
-                : "bg-white text-ink-700 border border-ink-300/40"
+                ? "bg-brand-500 text-white shadow-[0_4px_10px_-2px_rgba(31,144,224,0.45)]"
+                : "chip-glass text-ink-700"
             }`}
           >
             {t.label}
