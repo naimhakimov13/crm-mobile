@@ -1,18 +1,21 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageHeader } from "../layout/PageHeader";
 import { SearchBar } from "../components/SearchBar";
-import { products } from "../data/mock";
+import { useProducts } from "../data/ProductsContext";
 import { formatMoney } from "../utils/format";
 import { PlusIcon } from "../components/Icon";
 import { EmptyState } from "../components/EmptyState";
 
 export default function ProductsPage() {
+  const { products } = useProducts();
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("Все");
 
   const categories = useMemo(
     () => ["Все", ...Array.from(new Set(products.map((p) => p.category)))],
-    []
+    [products]
   );
 
   const filtered = useMemo(() => {
@@ -34,6 +37,8 @@ export default function ProductsPage() {
         subtitle={`${products.length} позиций`}
         right={
           <button
+            type="button"
+            onClick={() => navigate("/products/new")}
             className="w-9 h-9 grid place-items-center rounded-full bg-brand-500 text-white shadow-card active:bg-brand-600"
             aria-label="Добавить"
           >
@@ -73,7 +78,12 @@ export default function ProductsPage() {
               const low = p.stock <= 12;
               const out = p.stock === 0;
               return (
-                <div key={p.id} className="px-4 py-3 row gap-3">
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => navigate(`/products/${p.id}`)}
+                  className="w-full text-left px-4 py-3 row gap-3 active:bg-white/40 transition-colors"
+                >
                   <div className="min-w-0">
                     <div className="font-medium text-ink-900 truncate">
                       {p.name}
@@ -100,12 +110,13 @@ export default function ProductsPage() {
                         : `${p.stock} ${p.unit} в наличии`}
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
         )}
       </div>
+
     </div>
   );
 }

@@ -70,6 +70,25 @@ export const ChevronRightIcon = (p: IconProps) => (
   </svg>
 );
 
+export const ChevronLeftIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M15 6l-6 6 6 6" />
+  </svg>
+);
+
+export const EditIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M4 20h4l10-10-4-4L4 16v4z" />
+    <path d="M14 6l4 4" />
+  </svg>
+);
+
+export const CheckIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M5 12l5 5 9-11" />
+  </svg>
+);
+
 export const ArrowUpIcon = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M12 19V5" />
@@ -104,5 +123,12 @@ export const WalletIcon = (p: IconProps) => (
     <rect x="3" y="6" width="18" height="13" rx="2" />
     <path d="M3 10h18" />
     <circle cx="16.5" cy="14" r="1" />
+  </svg>
+);
+
+export const BellIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M6 8a6 6 0 0112 0c0 4.5 1.5 6 2 7H4c.5-1 2-2.5 2-7z" />
+    <path d="M10 19a2 2 0 004 0" />
   </svg>
 );

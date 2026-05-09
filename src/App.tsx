@@ -3,7 +3,11 @@ import { AppShell } from "./layout/AppShell";
 import { RequireAuth } from "./auth/RequireAuth";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
+import ProfilePage from "./pages/ProfilePage";
+import NotificationsPage from "./pages/NotificationsPage";
 import ProductsPage from "./pages/ProductsPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import ManageProductPage from "./pages/ManageProductPage";
 import StoragePage from "./pages/StoragePage";
 import ClientsPage from "./pages/ClientsPage";
 import OperationsHubPage from "./pages/operations/OperationsHubPage";
@@ -25,7 +29,12 @@ export default function App() {
         }
       >
         <Route index element={<DashboardPage />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="products/new" element={<ManageProductPage />} />
+        <Route path="products/:productId/edit" element={<ManageProductPage />} />
         <Route path="products" element={<ProductsPage />} />
+        <Route path="products/:id" element={<ProductDetailPage />} />
         <Route path="storage" element={<StoragePage />} />
         <Route path="clients" element={<ClientsPage />} />
         <Route path="operations" element={<OperationsHubPage />} />

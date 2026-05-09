@@ -35,6 +35,12 @@ body {
     overflow-x: hidden;
   }
 
+  @media (min-width: 768px) {
+    .app-frame {
+      max-width: 48rem;
+    }
+  }
+
   .app-frame::before,
   .app-frame::after {
     content: "";

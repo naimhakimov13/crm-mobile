@@ -8,7 +8,7 @@ import type {
   Transfer,
 } from "./types";
 
-export const products: Product[] = [
+export const PRODUCTS_SEED: Product[] = [
   {
     id: "p1",
     sku: "BRG-001",

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { LogoutIcon } from "../components/Icon";
+import { BellIcon, LogoutIcon } from "../components/Icon";
 import { DonutChart } from "../components/charts/DonutChart";
 import { LineChart } from "../components/charts/LineChart";
 
@@ -118,7 +119,7 @@ function todayLabel() {
   const w = d.toLocaleDateString("ru-RU", { weekday: "long" });
   const day = d.getDate();
   const month = d.toLocaleDateString("ru-RU", { month: "long" });
-  return `Сегодня, ${w} ${day} ${month}`;
+  return `${w[0].toUpperCase()}${w.slice(1)}, ${day} ${month}`;
 }
 
 export default function DashboardPage() {
@@ -132,30 +133,53 @@ export default function DashboardPage() {
     []
   );
 
+  const initial = (user?.email ?? "Г")[0].toUpperCase();
+
   return (
     <div>
-      <header className="px-5 pt-12 pb-6 bg-brand-grad text-white rounded-b-[24px]">
+      <header className="px-4 pt-8 pb-5 bg-brand-grad text-white rounded-b-[20px]">
         <div className="row">
-          <div className="min-w-0">
-            <div className="text-white/80 text-xs">Аккаунт</div>
-            <div className="text-base font-medium truncate">
-              {user?.email ?? "Гость"}
-            </div>
-          </div>
-          <button
-            onClick={logout}
-            className="w-9 h-9 grid place-items-center rounded-full bg-white/15 active:bg-white/25"
-            aria-label="Выйти"
+          <Link
+            to="/profile"
+            className="flex items-center gap-2.5 min-w-0 active:opacity-80 transition-opacity"
           >
-            <LogoutIcon size={18} />
-          </button>
+            <div className="w-9 h-9 rounded-full bg-white/20 border border-white/25 grid place-items-center text-sm font-semibold flex-none">
+              {initial}
+            </div>
+            <div className="min-w-0">
+              <div className="text-white/65 text-[10px] uppercase tracking-wider leading-none">
+                Аккаунт
+              </div>
+              <div className="text-sm font-medium truncate leading-none mt-1">
+                {user?.name || user?.email || "Гость"}
+              </div>
+            </div>
+          </Link>
+          <div className="flex items-center gap-1.5 flex-none">
+            <Link
+              to="/notifications"
+              className="relative w-9 h-9 grid place-items-center rounded-full bg-white/15 active:bg-white/25"
+              aria-label="Уведомления"
+            >
+              <BellIcon size={18} />
+              <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-warning ring-2 ring-brand-500" />
+            </Link>
+            <button
+              onClick={logout}
+              className="w-9 h-9 grid place-items-center rounded-full bg-white/15 active:bg-white/25"
+              aria-label="Выйти"
+            >
+              <LogoutIcon size={18} />
+            </button>
+          </div>
         </div>
-        <div className="text-white text-lg font-semibold mt-3">
+
+        <div className="text-white/95 text-[15px] font-medium mt-3.5">
           {todayLabel()}
         </div>
       </header>
 
-      <div className="px-5 -mt-4">
+      <div className="px-3 -mt-4">
         <div className="glass-segmented grid grid-cols-3 gap-1">
           {periodTabs.map((t) => {
             const active = t.id === period;
@@ -174,7 +198,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <section className="px-5 mt-4">
+      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 md:px-3">
+      <section>
         <div className="card">
           <div className="flex items-center justify-center">
             <DonutChart
@@ -216,7 +241,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="px-5 mt-4">
+      <section>
         <div className="card">
           <div className="row mb-3">
             <div className="font-semibold text-ink-900">Кассы</div>
@@ -240,7 +265,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="px-5 mt-4">
+      <section className="md:col-span-2">
         <div className="card">
           <div className="font-semibold text-ink-900 text-center mb-2">
             Оборот
@@ -275,7 +300,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="px-5 mt-4">
+      <section>
         <div className="card">
           <div className="font-semibold text-ink-900 text-center mb-2">
             Приход
@@ -309,7 +334,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="px-5 mt-4">
+      <section>
         <div className="card">
           <div className="font-semibold text-ink-900 text-center mb-2">
             Реализация
@@ -342,6 +367,7 @@ export default function DashboardPage() {
           />
         </div>
       </section>
+      </div>
     </div>
   );
 }

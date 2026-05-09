@@ -24,8 +24,12 @@ const tabs: Tab[] = [
 
 const spring = "cubic-bezier(0.34, 1.56, 0.64, 1)";
 
+const visibleOn = new Set(tabs.map((t) => t.to));
+
 export function BottomNav() {
   const location = useLocation();
+
+  if (!visibleOn.has(location.pathname)) return null;
 
   const activeIndex = tabs.findIndex((t) =>
     t.to === "/"
@@ -34,23 +38,34 @@ export function BottomNav() {
         location.pathname.startsWith(t.to + "/")
   );
 
+  const pillIndex = activeIndex < 0 ? 0 : activeIndex;
+
   return (
     <div
       className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-20 pointer-events-none"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
     >
-      <nav className="liquid-glass mx-4 pointer-events-auto">
+      <nav
+        className="liquid-glass mx-4 pointer-events-auto"
+        style={{
+          boxShadow: [
+            "inset 0 1px 0 rgba(255,255,255,0.95)",
+            "inset 0 -1px 0 rgba(255,255,255,0.3)",
+            "0 -2px 8px rgba(14,23,38,0.06)",
+            "0 12px 24px -6px rgba(14,23,38,0.18)",
+            "0 24px 48px -12px rgba(14,23,38,0.28)",
+            "0 4px 16px rgba(31,144,224,0.12)",
+          ].join(", "),
+        }}
+      >
         <ul className="relative grid grid-cols-5 h-[64px]">
           <span
             aria-hidden
-            className="absolute top-1.5 bottom-1.5 rounded-2xl bg-white/60 will-change-transform"
+            className="absolute top-1.5 bottom-1.5 rounded-2xl bg-white/60 will-change-[left]"
             style={{
               width: "calc(20% - 8px)",
-              left: "4px",
-              transform: `translateX(calc(${
-                activeIndex < 0 ? 0 : activeIndex
-              } * (100% + 8px)))`,
-              transition: `transform 520ms ${spring}, opacity 200ms ease`,
+              left: `calc(4px + ${pillIndex} * (100% / 5))`,
+              transition: `left 520ms ${spring}, opacity 200ms ease`,
               opacity: activeIndex >= 0 ? 1 : 0,
               boxShadow:
                 "inset 0 1px 0 rgba(255,255,255,0.85), 0 4px 12px rgba(31,144,224,0.22)",
