@@ -104,7 +104,7 @@ export default function ProductsPage() {
         {filtered.length === 0 ? (
           <EmptyState title="Ничего не найдено" subtitle="Измените запрос" />
         ) : (
-          <div className="card p-0 divide-y divide-ink-300/30">
+          <div className="card -mx-5 rounded-none p-0 divide-y divide-ink-300/30">
             {filtered.map((p) => {
               const low = p.stock <= 12;
               const out = p.stock === 0;
