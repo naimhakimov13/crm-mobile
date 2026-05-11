@@ -2,13 +2,13 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "../layout/PageHeader";
 import { SearchBar } from "../components/SearchBar";
-import { useProducts } from "../data/ProductsContext";
+import { activeFilterCount, useProducts } from "../data/ProductsContext";
 import { formatMoney } from "../utils/format";
-import { PlusIcon } from "../components/Icon";
+import { FilterIcon, PlusIcon } from "../components/Icon";
 import { EmptyState } from "../components/EmptyState";
 
 export default function ProductsPage() {
-  const { products } = useProducts();
+  const { products, filters } = useProducts();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("Все");
@@ -18,17 +18,33 @@ export default function ProductsPage() {
     [products]
   );
 
+  const activeCount = activeFilterCount(filters);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
-      const inCat = category === "Все" || p.category === category;
-      if (!inCat) return false;
+      if (category !== "Все" && p.category !== category) return false;
+
+      if (filters.minPrice !== null && p.price < filters.minPrice) return false;
+      if (filters.maxPrice !== null && p.price > filters.maxPrice) return false;
+      if (filters.currency !== "all" && p.currency !== filters.currency)
+        return false;
+      if (filters.unit !== "all" && p.unit !== filters.unit) return false;
+
+      if (filters.stockStatus === "in" && p.stock <= 12) return false;
+      if (
+        filters.stockStatus === "low" &&
+        (p.stock === 0 || p.stock > 12)
+      )
+        return false;
+      if (filters.stockStatus === "out" && p.stock !== 0) return false;
+
       if (!q) return true;
       return (
         p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
       );
     });
-  }, [query, category]);
+  }, [query, category, products, filters]);
 
   return (
     <div>
@@ -36,14 +52,29 @@ export default function ProductsPage() {
         title="Товары"
         subtitle={`${products.length} позиций`}
         right={
-          <button
-            type="button"
-            onClick={() => navigate("/products/new")}
-            className="w-9 h-9 grid place-items-center rounded-full bg-brand-500 text-white shadow-card active:bg-brand-600"
-            aria-label="Добавить"
-          >
-            <PlusIcon size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => navigate("/products/filters")}
+              className="relative w-9 h-9 grid place-items-center rounded-full chip-glass text-ink-700 active:scale-95 transition"
+              aria-label="Фильтры"
+            >
+              <FilterIcon size={18} />
+              {activeCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 grid place-items-center rounded-full bg-brand-500 text-white text-[10px] font-semibold">
+                  {activeCount}
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/products/new")}
+              className="w-9 h-9 grid place-items-center rounded-full bg-brand-500 text-white shadow-card active:bg-brand-600"
+              aria-label="Добавить"
+            >
+              <PlusIcon size={18} />
+            </button>
+          </div>
         }
       />
 

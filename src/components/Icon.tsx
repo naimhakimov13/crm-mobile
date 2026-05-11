@@ -126,6 +126,14 @@ export const WalletIcon = (p: IconProps) => (
   </svg>
 );
 
+export const FilterIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M4 6h16" />
+    <path d="M7 12h10" />
+    <path d="M10 18h4" />
+  </svg>
+);
+
 export const BellIcon = (p: IconProps) => (
   <svg {...base(p)}>
     <path d="M6 8a6 6 0 0112 0c0 4.5 1.5 6 2 7H4c.5-1 2-2.5 2-7z" />

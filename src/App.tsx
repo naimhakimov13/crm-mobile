@@ -8,6 +8,7 @@ import NotificationsPage from "./pages/NotificationsPage";
 import ProductsPage from "./pages/ProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import ManageProductPage from "./pages/ManageProductPage";
+import ProductFiltersPage from "./pages/ProductFiltersPage";
 import StoragePage from "./pages/StoragePage";
 import ClientsPage from "./pages/ClientsPage";
 import OperationsHubPage from "./pages/operations/OperationsHubPage";
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="profile" element={<ProfilePage />} />
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="products/new" element={<ManageProductPage />} />
+        <Route path="products/filters" element={<ProductFiltersPage />} />
         <Route path="products/:productId/edit" element={<ManageProductPage />} />
         <Route path="products" element={<ProductsPage />} />
         <Route path="products/:id" element={<ProductDetailPage />} />
