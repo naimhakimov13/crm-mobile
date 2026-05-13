@@ -15,7 +15,6 @@ const BORDER = "#E7EAF0";
 const BG = "#F4F6FA";
 const TEXT = "#0E1726";
 const MUTED = "#5B6878";
-const PRIMARY = "#2FA8FF";
 const SUCCESS = "#22C55E";
 const WARN = "#F59E0B";
 const DANGER = "#EF4444";
