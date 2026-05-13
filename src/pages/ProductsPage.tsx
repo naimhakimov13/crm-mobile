@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProducts } from "../data/ProductsContext";
+import { useTheme } from "../theme/ThemeContext";
 import { formatMoney } from "../utils/format";
 import {
   BoxIcon,
@@ -13,16 +14,16 @@ import type { Product } from "../data/types";
 
 type Status = "in" | "low" | "out";
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const MUTED_SOFT = "#B4BCC8";
-const PRIMARY = "#2FA8FF";
-const SUCCESS = "#22C55E";
-const WARN = "#F59E0B";
-const DANGER = "#EF4444";
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const MUTED_SOFT = "var(--c-muted-soft)";
+const PRIMARY = "var(--c-primary)";
+const SUCCESS = "var(--c-success)";
+const WARN = "var(--c-warn)";
+const DANGER = "var(--c-danger)";
 
 function statusOf(p: Product): Status {
   if (p.stock === 0) return "out";
@@ -56,6 +57,7 @@ const FILTERS: Array<"Все" | "В наличии" | "Заканчиваетс�
 export default function ProductsPage() {
   const { products } = useProducts();
   const navigate = useNavigate();
+  const { dark } = useTheme();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Все");
 
@@ -185,8 +187,12 @@ export default function ProductsPage() {
               <div
                 className="w-[60px] h-[60px] rounded-[12px] shrink-0 flex items-center justify-center"
                 style={{
-                  background: `hsl(${hue}, 70%, 94%)`,
-                  color: `hsl(${hue}, 55%, 45%)`,
+                  background: dark
+                    ? `hsl(${hue}, 30%, 18%)`
+                    : `hsl(${hue}, 70%, 94%)`,
+                  color: dark
+                    ? `hsl(${hue}, 60%, 75%)`
+                    : `hsl(${hue}, 55%, 45%)`,
                 }}
               >
                 <BoxIcon size={26} />

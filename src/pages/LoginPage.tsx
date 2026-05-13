@@ -2,6 +2,14 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const PRIMARY = "var(--c-primary)";
+const DANGER = "var(--c-danger)";
+
 type LocationState = { from?: { pathname?: string } } | null;
 
 function BoltIcon() {
@@ -88,7 +96,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#f4f6fa] text-ink-900 flex flex-col px-6 pt-[70px] pb-10">
+    <div
+      className="min-h-screen w-full flex flex-col px-6 pt-[70px] pb-10"
+      style={{ background: BG, color: TEXT }}
+    >
       <div className="mt-10">
         <div
           className="w-16 h-16 rounded-[18px] flex items-center justify-center text-white mb-[26px]"
@@ -100,10 +111,16 @@ export default function LoginPage() {
         >
           <BoltIcon />
         </div>
-        <h1 className="m-0 text-[32px] font-bold tracking-[-0.6px] leading-[1.1]">
+        <h1
+          className="m-0 text-[32px] font-bold tracking-[-0.6px] leading-[1.1]"
+          style={{ color: TEXT }}
+        >
           С возвращением
         </h1>
-        <p className="mt-2 mb-0 text-[15px] leading-[1.45] text-ink-500">
+        <p
+          className="mt-2 mb-0 text-[15px] leading-[1.45]"
+          style={{ color: MUTED }}
+        >
           Войдите в аккаунт, чтобы продолжить работу с CRM
         </p>
       </div>
@@ -112,12 +129,19 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className="flex-1 flex flex-col gap-2.5 mt-8"
       >
-        <div className="bg-white border border-[#E7EAF0] rounded-[14px] px-[14px] py-2.5 flex flex-col gap-0.5">
-          <div className="text-[11.5px] font-semibold tracking-[0.6px] uppercase text-ink-500">
+        <div
+          className="rounded-[14px] px-[14px] py-2.5 flex flex-col gap-0.5"
+          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+        >
+          <div
+            className="text-[11.5px] font-semibold tracking-[0.6px] uppercase"
+            style={{ color: MUTED }}
+          >
             E‑mail
           </div>
           <input
-            className="bg-transparent border-0 outline-none text-ink-900 text-[16px] p-0 min-w-0 w-full"
+            className="bg-transparent border-0 outline-none text-[16px] p-0 min-w-0 w-full"
+            style={{ color: TEXT }}
             type="email"
             autoComplete="email"
             value={email}
@@ -126,24 +150,31 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="bg-white border border-[#E7EAF0] rounded-[14px] px-[14px] py-2.5 flex flex-col gap-0.5">
-          <div className="text-[11.5px] font-semibold tracking-[0.6px] uppercase text-ink-500">
+        <div
+          className="rounded-[14px] px-[14px] py-2.5 flex flex-col gap-0.5"
+          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+        >
+          <div
+            className="text-[11.5px] font-semibold tracking-[0.6px] uppercase"
+            style={{ color: MUTED }}
+          >
             Пароль
           </div>
           <div className="flex items-center gap-2">
             <input
-              className="flex-1 bg-transparent border-0 outline-none text-ink-900 text-[16px] p-0 min-w-0"
+              className="flex-1 bg-transparent border-0 outline-none text-[16px] p-0 min-w-0"
+              style={{ color: TEXT, letterSpacing: showPassword ? 0 : 2 }}
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{ letterSpacing: showPassword ? 0 : 2 }}
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="-m-1 p-1 bg-transparent border-0 text-ink-500 flex items-center"
+              className="-m-1 p-1 bg-transparent border-0 flex items-center"
+              style={{ color: MUTED }}
               aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
             >
               <EyeIcon open={showPassword} />
@@ -152,7 +183,14 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="text-sm text-danger bg-red-50 border border-red-100 rounded-[12px] px-3 py-2">
+          <div
+            className="text-sm rounded-[12px] px-3 py-2"
+            style={{
+              color: DANGER,
+              background: "var(--c-danger-fade)",
+              border: `1px solid rgba(239,68,68,0.3)`,
+            }}
+          >
             {error}
           </div>
         )}
@@ -161,12 +199,13 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setRemember((v) => !v)}
-            className="flex items-center gap-2 text-[13.5px] text-ink-500 bg-transparent border-0 p-0"
+            className="flex items-center gap-2 text-[13.5px] bg-transparent border-0 p-0"
+            style={{ color: MUTED }}
           >
             <span
               className="w-[18px] h-[18px] rounded-[5px] flex items-center justify-center"
               style={{
-                background: remember ? "#2FA8FF" : "#E7EAF0",
+                background: remember ? PRIMARY : BORDER,
                 color: "#fff",
               }}
             >
@@ -176,7 +215,8 @@ export default function LoginPage() {
           </button>
           <Link
             to="/forgot-password"
-            className="text-[13.5px] font-medium text-[#2FA8FF] no-underline"
+            className="text-[13.5px] font-medium no-underline"
+            style={{ color: PRIMARY }}
           >
             Забыли пароль?
           </Link>
@@ -190,7 +230,7 @@ export default function LoginPage() {
           disabled={loading}
           className="h-[54px] rounded-[14px] border-0 text-white text-[16px] font-semibold flex items-center justify-center gap-2 transition-opacity"
           style={{
-            background: "#2FA8FF",
+            background: PRIMARY,
             boxShadow: "0 8px 20px rgba(47,168,255,0.25)",
             opacity: loading ? 0.7 : 1,
           }}
@@ -208,11 +248,15 @@ export default function LoginPage() {
             "Войти в аккаунт"
           )}
         </button>
-        <div className="text-center text-[13.5px] text-ink-500">
+        <div
+          className="text-center text-[13.5px]"
+          style={{ color: MUTED }}
+        >
           Нет аккаунта?{" "}
           <a
             href="#"
-            className="text-[#2FA8FF] font-medium no-underline"
+            className="font-medium no-underline"
+            style={{ color: PRIMARY }}
             onClick={(e) => e.preventDefault()}
           >
             Связаться с менеджером

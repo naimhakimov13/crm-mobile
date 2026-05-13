@@ -1,6 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const PRIMARY = "var(--c-primary)";
+const DANGER = "var(--c-danger)";
+
 function ChevronLeft() {
   return (
     <svg
@@ -80,13 +88,21 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#f4f6fa] text-ink-900 flex flex-col px-6 pt-[70px] pb-10">
+    <div
+      className="min-h-screen w-full flex flex-col px-6 pt-[70px] pb-10"
+      style={{ background: BG, color: TEXT }}
+    >
       <div className="flex items-center">
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full bg-white grid place-items-center text-ink-900"
-          style={{ boxShadow: "0 1px 2px rgba(14,23,38,0.06)" }}
+          className="w-10 h-10 rounded-full grid place-items-center"
+          style={{
+            background: SURFACE,
+            border: `1px solid ${BORDER}`,
+            color: TEXT,
+            boxShadow: "0 1px 2px rgba(14,23,38,0.06)",
+          }}
           aria-label="Назад"
         >
           <ChevronLeft />
@@ -106,10 +122,16 @@ export default function ForgotPasswordPage() {
             >
               <KeyIcon />
             </div>
-            <h1 className="m-0 text-[32px] font-bold tracking-[-0.6px] leading-[1.1]">
+            <h1
+              className="m-0 text-[32px] font-bold tracking-[-0.6px] leading-[1.1]"
+              style={{ color: TEXT }}
+            >
               Забыли пароль?
             </h1>
-            <p className="mt-2 mb-0 text-[15px] leading-[1.45] text-ink-500">
+            <p
+              className="mt-2 mb-0 text-[15px] leading-[1.45]"
+              style={{ color: MUTED }}
+            >
               Укажите e‑mail аккаунта — мы пришлём ссылку для сброса пароля.
             </p>
           </div>
@@ -118,12 +140,19 @@ export default function ForgotPasswordPage() {
             onSubmit={handleSubmit}
             className="flex-1 flex flex-col gap-2.5 mt-8"
           >
-            <div className="bg-white border border-[#E7EAF0] rounded-[14px] px-[14px] py-2.5 flex flex-col gap-0.5">
-              <div className="text-[11.5px] font-semibold tracking-[0.6px] uppercase text-ink-500">
+            <div
+              className="rounded-[14px] px-[14px] py-2.5 flex flex-col gap-0.5"
+              style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+            >
+              <div
+                className="text-[11.5px] font-semibold tracking-[0.6px] uppercase"
+                style={{ color: MUTED }}
+              >
                 E‑mail
               </div>
               <input
-                className="bg-transparent border-0 outline-none text-ink-900 text-[16px] p-0 min-w-0 w-full"
+                className="bg-transparent border-0 outline-none text-[16px] p-0 min-w-0 w-full"
+                style={{ color: TEXT }}
                 type="email"
                 autoComplete="email"
                 value={email}
@@ -134,7 +163,14 @@ export default function ForgotPasswordPage() {
             </div>
 
             {error && (
-              <div className="text-sm text-danger bg-red-50 border border-red-100 rounded-[12px] px-3 py-2">
+              <div
+                className="text-sm rounded-[12px] px-3 py-2"
+                style={{
+                  color: DANGER,
+                  background: "var(--c-danger-fade)",
+                  border: `1px solid rgba(239,68,68,0.3)`,
+                }}
+              >
                 {error}
               </div>
             )}
@@ -147,7 +183,7 @@ export default function ForgotPasswordPage() {
               disabled={loading}
               className="h-[54px] rounded-[14px] border-0 text-white text-[16px] font-semibold flex items-center justify-center gap-2 transition-opacity"
               style={{
-                background: "#2FA8FF",
+                background: PRIMARY,
                 boxShadow: "0 8px 20px rgba(47,168,255,0.25)",
                 opacity: loading ? 0.7 : 1,
               }}
@@ -165,11 +201,15 @@ export default function ForgotPasswordPage() {
                 "Отправить ссылку"
               )}
             </button>
-            <div className="text-center text-[13.5px] text-ink-500">
+            <div
+              className="text-center text-[13.5px]"
+              style={{ color: MUTED }}
+            >
               Вспомнили пароль?{" "}
               <Link
                 to="/login"
-                className="text-[#2FA8FF] font-medium no-underline"
+                className="font-medium no-underline"
+                style={{ color: PRIMARY }}
               >
                 Войти в аккаунт
               </Link>
@@ -189,18 +229,28 @@ export default function ForgotPasswordPage() {
             >
               <MailIcon />
             </div>
-            <h1 className="m-0 text-[28px] font-bold tracking-[-0.5px] leading-[1.15]">
+            <h1
+              className="m-0 text-[28px] font-bold tracking-[-0.5px] leading-[1.15]"
+              style={{ color: TEXT }}
+            >
               Письмо отправлено
             </h1>
-            <p className="mt-3 mb-0 text-[15px] leading-[1.5] text-ink-500 max-w-[300px]">
+            <p
+              className="mt-3 mb-0 text-[15px] leading-[1.5] max-w-[300px]"
+              style={{ color: MUTED }}
+            >
               Мы отправили ссылку для сброса пароля на{" "}
-              <span className="text-ink-900 font-medium">{email}</span>. Проверьте входящие и папку «Спам».
+              <span className="font-medium" style={{ color: TEXT }}>
+                {email}
+              </span>
+              . Проверьте входящие и папку «Спам».
             </p>
 
             <button
               type="button"
               onClick={() => setSent(false)}
-              className="mt-6 text-[13.5px] font-medium text-[#2FA8FF] bg-transparent border-0 p-2"
+              className="mt-6 text-[13.5px] font-medium bg-transparent border-0 p-2"
+              style={{ color: PRIMARY }}
             >
               Указать другой e‑mail
             </button>
@@ -212,7 +262,7 @@ export default function ForgotPasswordPage() {
               onClick={() => navigate("/login")}
               className="h-[54px] rounded-[14px] border-0 text-white text-[16px] font-semibold flex items-center justify-center gap-2"
               style={{
-                background: "#2FA8FF",
+                background: PRIMARY,
                 boxShadow: "0 8px 20px rgba(47,168,255,0.25)",
               }}
             >

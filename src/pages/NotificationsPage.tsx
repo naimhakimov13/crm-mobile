@@ -23,22 +23,29 @@ type Notification = {
   Icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
 };
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const MUTED_SOFT = "#B4BCC8";
-const PRIMARY = "#2FA8FF";
-const SUCCESS = "#22C55E";
-const WARN = "#F59E0B";
-const DANGER = "#EF4444";
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const MUTED_SOFT = "var(--c-muted-soft)";
+const PRIMARY = "var(--c-primary)";
+const SUCCESS = "var(--c-success)";
+const WARN = "var(--c-warn)";
+const DANGER = "var(--c-danger)";
 
 const toneColor: Record<NotifType, string> = {
   info: PRIMARY,
   success: SUCCESS,
   warning: WARN,
   danger: DANGER,
+};
+
+const toneFade: Record<NotifType, string> = {
+  info: "var(--c-primary-fade)",
+  success: "var(--c-success-fade)",
+  warning: "var(--c-warn-fade)",
+  danger: "var(--c-danger-fade)",
 };
 
 const initialNotifications: Notification[] = [
@@ -302,6 +309,7 @@ export default function NotificationsPage() {
                 >
                   {grouped[bucket].map((n, i) => {
                     const c = toneColor[n.type];
+                    const cFade = toneFade[n.type];
                     const Icon = n.Icon;
                     return (
                       <button
@@ -318,7 +326,7 @@ export default function NotificationsPage() {
                       >
                         <div
                           className="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center shrink-0"
-                          style={{ background: c + "1f", color: c }}
+                          style={{ background: cFade, color: c }}
                         >
                           <Icon size={18} />
                         </div>
@@ -367,7 +375,7 @@ export default function NotificationsPage() {
       {unreadCount === 0 && items.length > 0 && (
         <div
           className="mx-5 mb-6 rounded-[14px] p-4 flex items-center gap-3"
-          style={{ background: SUCCESS + "14", color: TEXT }}
+          style={{ background: "var(--c-success-fade)", color: TEXT }}
         >
           <div
             className="w-9 h-9 rounded-full flex items-center justify-center"

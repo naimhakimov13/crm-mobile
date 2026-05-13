@@ -5,28 +5,22 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { useTheme, type ThemeTokens } from "../theme/ThemeContext";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CheckIcon,
   EditIcon,
+  LogoutIcon,
 } from "../components/Icon";
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const PRIMARY = "#2FA8FF";
-const PRIMARY_FADE = "rgba(47,168,255,0.14)";
-const SUCCESS = "#22C55E";
 const MAX_BIO = 160;
 
-function MailIcon({ size = 16, color = MUTED }: { size?: number; color?: string }) {
+function MailIcon({ color }: { color: string }) {
   return (
     <svg
-      width={size}
-      height={size}
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke={color}
@@ -41,11 +35,11 @@ function MailIcon({ size = 16, color = MUTED }: { size?: number; color?: string 
   );
 }
 
-function PhoneIcon({ size = 16, color = MUTED }: { size?: number; color?: string }) {
+function PhoneIcon({ color }: { color: string }) {
   return (
     <svg
-      width={size}
-      height={size}
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke={color}
@@ -59,14 +53,14 @@ function PhoneIcon({ size = 16, color = MUTED }: { size?: number; color?: string
   );
 }
 
-function GearIcon() {
+function GearIcon({ color }: { color: string }) {
   return (
     <svg
       width="16"
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke={PRIMARY}
+      stroke={color}
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -74,6 +68,24 @@ function GearIcon() {
     >
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+    </svg>
+  );
+}
+
+function MoonIcon({ color }: { color: string }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
     </svg>
   );
 }
@@ -91,7 +103,8 @@ function initials(seed: string) {
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
+  const t = useTheme();
 
   const [name, setName] = useState(user?.name ?? "");
   const [position, setPosition] = useState(user?.position ?? "");
@@ -103,7 +116,8 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
 
   const displayName = name || user?.email || "Гость";
-  const avatarLabel = initials(displayName) || displayName[0]?.toUpperCase() || "?";
+  const avatarLabel =
+    initials(displayName) || displayName[0]?.toUpperCase() || "?";
 
   function handleSave() {
     updateUser({
@@ -118,10 +132,15 @@ export default function ProfilePage() {
     setTimeout(() => setSaved(false), 1600);
   }
 
+  function handleLogout() {
+    logout();
+    navigate("/login", { replace: true });
+  }
+
   return (
     <div
       className="min-h-full flex flex-col relative"
-      style={{ background: BG }}
+      style={{ background: t.bg }}
     >
       <div className="flex items-center justify-between px-5 pt-6 pb-3">
         <button
@@ -129,9 +148,9 @@ export default function ProfilePage() {
           onClick={() => navigate(-1)}
           className="w-10 h-10 rounded-full grid place-items-center active:scale-95 transition-transform"
           style={{
-            background: SURFACE,
-            border: `1px solid ${BORDER}`,
-            color: TEXT,
+            background: t.surface,
+            border: `1px solid ${t.border}`,
+            color: t.text,
           }}
           aria-label="Назад"
         >
@@ -139,7 +158,7 @@ export default function ProfilePage() {
         </button>
         <div
           className="text-[16px] font-semibold tracking-[-0.2px]"
-          style={{ color: TEXT }}
+          style={{ color: t.text }}
         >
           Профиль
         </div>
@@ -147,7 +166,7 @@ export default function ProfilePage() {
           type="button"
           onClick={handleSave}
           className="h-[34px] px-[14px] rounded-[10px] text-[14px] font-semibold bg-transparent border-0"
-          style={{ color: PRIMARY }}
+          style={{ color: t.primary }}
         >
           Готово
         </button>
@@ -169,8 +188,8 @@ export default function ProfilePage() {
             type="button"
             className="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center"
             style={{
-              background: PRIMARY,
-              border: `3px solid ${BG}`,
+              background: t.primary,
+              border: `3px solid ${t.bg}`,
               boxShadow: "0 4px 10px rgba(47,168,255,0.4)",
             }}
             aria-label="Изменить фотографию"
@@ -181,16 +200,17 @@ export default function ProfilePage() {
         <button
           type="button"
           className="block mx-auto text-[13px] font-medium bg-transparent border-0"
-          style={{ color: PRIMARY }}
+          style={{ color: t.primary }}
         >
           Изменить фотографию
         </button>
       </div>
 
-      <Section title="Основное">
+      <Section t={t} title="Основное">
         <div className="flex flex-col gap-2">
-          <FormField label="ФИО" value={name} onChange={setName} />
+          <FormField t={t} label="ФИО" value={name} onChange={setName} />
           <FormField
+            t={t}
             label="Должность"
             value={position}
             onChange={setPosition}
@@ -198,31 +218,35 @@ export default function ProfilePage() {
         </div>
       </Section>
 
-      <Section title="Контакты">
+      <Section t={t} title="Контакты">
         <div className="flex flex-col gap-2">
           <FormField
+            t={t}
             label="E‑mail"
             type="email"
             value={email}
             onChange={setEmail}
-            trailing={<MailIcon />}
+            trailing={<MailIcon color={t.muted} />}
           />
           <FormField
+            t={t}
             label="Телефон"
             type="tel"
             value={phone}
             onChange={setPhone}
-            trailing={<PhoneIcon />}
+            trailing={<PhoneIcon color={t.muted} />}
           />
-          <FormField label="Город" value={city} onChange={setCity} />
+          <FormField t={t} label="Город" value={city} onChange={setCity} />
         </div>
       </Section>
 
       <Section
+        t={t}
         title="О себе"
         rightLabel={`${bio.length}/${MAX_BIO}`}
       >
         <FormField
+          t={t}
           label="Заметка"
           value={bio}
           onChange={setBio}
@@ -231,10 +255,47 @@ export default function ProfilePage() {
         />
       </Section>
 
-      <Section title="Безопасность">
+      <Section t={t} title="Внешний вид">
         <div
           className="rounded-[14px] overflow-hidden"
-          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+          style={{ background: t.surface, border: `1px solid ${t.border}` }}
+        >
+          <div className="px-4 py-3.5 flex items-center gap-3">
+            <div
+              className="w-[34px] h-[34px] rounded-[9px] flex items-center justify-center shrink-0"
+              style={{ background: t.primaryFade }}
+            >
+              <MoonIcon color={t.primary} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div
+                className="text-[14.5px] font-semibold"
+                style={{ color: t.text }}
+              >
+                Тёмная тема
+              </div>
+              <div
+                className="text-[12px] mt-px"
+                style={{ color: t.muted }}
+              >
+                {t.dark ? "Включена" : "Следует за системой по умолчанию"}
+              </div>
+            </div>
+            <Toggle
+              value={t.dark}
+              onChange={t.setDark}
+              activeColor={t.primary}
+              trackColor={t.border}
+              ariaLabel="Переключить тёмную тему"
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section t={t} title="Безопасность">
+        <div
+          className="rounded-[14px] overflow-hidden"
+          style={{ background: t.surface, border: `1px solid ${t.border}` }}
         >
           <button
             type="button"
@@ -243,78 +304,91 @@ export default function ProfilePage() {
           >
             <div
               className="w-[34px] h-[34px] rounded-[9px] flex items-center justify-center shrink-0"
-              style={{ background: PRIMARY_FADE }}
+              style={{ background: t.primaryFade }}
             >
-              <GearIcon />
+              <GearIcon color={t.primary} />
             </div>
             <div className="flex-1 min-w-0">
               <div
                 className="text-[14.5px] font-semibold"
-                style={{ color: TEXT }}
+                style={{ color: t.text }}
               >
                 Сменить пароль
               </div>
-              <div
-                className="text-[12px] mt-px"
-                style={{ color: MUTED }}
-              >
+              <div className="text-[12px] mt-px" style={{ color: t.muted }}>
                 Последнее изменение: 2 мес. назад
               </div>
             </div>
             <ChevronRightIcon
               size={16}
               strokeWidth={2}
-              style={{ color: MUTED }}
+              style={{ color: t.muted }}
             />
           </button>
-          <div style={{ height: 1, background: BORDER }} />
+          <div style={{ height: 1, background: t.border }} />
           <div className="px-4 py-3.5 flex items-center gap-3">
             <div
               className="w-[34px] h-[34px] rounded-[9px] flex items-center justify-center shrink-0"
-              style={{ background: SUCCESS + "1f" }}
+              style={{ background: t.success + "1f" }}
             >
               <CheckIcon
                 size={16}
                 strokeWidth={2.4}
-                style={{ color: SUCCESS }}
+                style={{ color: t.success }}
               />
             </div>
             <div className="flex-1 min-w-0">
               <div
                 className="text-[14.5px] font-semibold"
-                style={{ color: TEXT }}
+                style={{ color: t.text }}
               >
                 Двухфакторная защита
               </div>
               <div
                 className="text-[12px] mt-px truncate"
-                style={{ color: MUTED }}
+                style={{ color: t.muted }}
               >
                 {twoFactor
                   ? `Включена · SMS на ${phone || "+7 … …22"}`
                   : "Отключена"}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setTwoFactor((v) => !v)}
-              className="relative w-11 h-[26px] rounded-full transition-colors"
-              style={{
-                background: twoFactor ? SUCCESS : BORDER,
-              }}
-              aria-pressed={twoFactor}
-              aria-label="Двухфакторная защита"
-            >
-              <span
-                className="absolute top-0.5 w-[22px] h-[22px] rounded-full bg-white transition-all"
-                style={{
-                  right: twoFactor ? 2 : "calc(100% - 24px)",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                }}
-              />
-            </button>
+            <Toggle
+              value={twoFactor}
+              onChange={setTwoFactor}
+              activeColor={t.success}
+              trackColor={t.border}
+              ariaLabel="Двухфакторная защита"
+            />
           </div>
         </div>
+      </Section>
+
+      <Section t={t} title="Аккаунт">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="w-full rounded-[14px] px-4 py-3.5 flex items-center gap-3 text-left border-0"
+          style={{ background: t.surface, border: `1px solid ${t.border}` }}
+        >
+          <div
+            className="w-[34px] h-[34px] rounded-[9px] flex items-center justify-center shrink-0"
+            style={{ background: t.danger + "1f" }}
+          >
+            <LogoutIcon size={16} strokeWidth={2} style={{ color: t.danger }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div
+              className="text-[14.5px] font-semibold"
+              style={{ color: t.danger }}
+            >
+              Выйти из аккаунта
+            </div>
+            <div className="text-[12px] mt-px truncate" style={{ color: t.muted }}>
+              {user?.email ?? "—"}
+            </div>
+          </div>
+        </button>
       </Section>
 
       <div style={{ height: 28 }} />
@@ -324,9 +398,9 @@ export default function ProfilePage() {
           className="absolute left-1/2 -translate-x-1/2 px-[18px] py-2.5 rounded-[12px] flex items-center gap-2 text-[13.5px] font-semibold"
           style={{
             top: 70,
-            background: SUCCESS,
+            background: t.success,
             color: "#fff",
-            boxShadow: "0 8px 24px rgba(34,197,94,0.4)",
+            boxShadow: `0 8px 24px ${t.success}40`,
             zIndex: 200,
           }}
         >
@@ -338,11 +412,46 @@ export default function ProfilePage() {
   );
 }
 
+function Toggle({
+  value,
+  onChange,
+  activeColor,
+  trackColor,
+  ariaLabel,
+}: {
+  value: boolean;
+  onChange: (v: boolean) => void;
+  activeColor: string;
+  trackColor: string;
+  ariaLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!value)}
+      className="relative w-11 h-[26px] rounded-full transition-colors shrink-0"
+      style={{ background: value ? activeColor : trackColor }}
+      aria-pressed={value}
+      aria-label={ariaLabel}
+    >
+      <span
+        className="absolute top-0.5 w-[22px] h-[22px] rounded-full bg-white transition-all"
+        style={{
+          right: value ? 2 : "calc(100% - 24px)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+        }}
+      />
+    </button>
+  );
+}
+
 function Section({
+  t,
   title,
   rightLabel,
   children,
 }: {
+  t: ThemeTokens;
   title: string;
   rightLabel?: string;
   children: ReactNode;
@@ -351,7 +460,7 @@ function Section({
     <div className="px-5 pt-5">
       <div
         className="flex justify-between items-baseline px-1 pb-2 text-[11.5px] font-semibold uppercase tracking-[0.6px]"
-        style={{ color: MUTED }}
+        style={{ color: t.muted }}
       >
         <span>{title}</span>
         {rightLabel && (
@@ -369,6 +478,7 @@ function Section({
 }
 
 function FormField({
+  t,
   label,
   value,
   onChange,
@@ -377,6 +487,7 @@ function FormField({
   multiline,
   maxLength,
 }: {
+  t: ThemeTokens;
   label: string;
   value: string;
   onChange: (v: string) => void;
@@ -392,11 +503,11 @@ function FormField({
   return (
     <div
       className="rounded-[14px] px-[14px] py-2.5 flex flex-col gap-0.5"
-      style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+      style={{ background: t.surface, border: `1px solid ${t.border}` }}
     >
       <div
         className="text-[11.5px] font-semibold uppercase tracking-[0.6px]"
-        style={{ color: MUTED }}
+        style={{ color: t.muted }}
       >
         {label}
       </div>
@@ -408,7 +519,7 @@ function FormField({
             maxLength={maxLength}
             rows={2}
             className="flex-1 bg-transparent border-0 outline-none p-0 min-w-0 text-[16px] resize-none"
-            style={{ color: TEXT }}
+            style={{ color: t.text }}
           />
         ) : (
           <input
@@ -416,7 +527,7 @@ function FormField({
             onChange={handle}
             type={type}
             className="flex-1 bg-transparent border-0 outline-none p-0 min-w-0 text-[16px]"
-            style={{ color: TEXT }}
+            style={{ color: t.text }}
           />
         )}
         {trailing && <span className="shrink-0">{trailing}</span>}

@@ -8,13 +8,13 @@ import {
   StorageIcon,
 } from "../components/Icon";
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const MUTED_SOFT = "#B4BCC8";
-const PRIMARY = "#2FA8FF";
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const MUTED_SOFT = "var(--c-muted-soft)";
+const PRIMARY = "var(--c-primary)";
 
 export default function StoragePage() {
   const [query, setQuery] = useState("");

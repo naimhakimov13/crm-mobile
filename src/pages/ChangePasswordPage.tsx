@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { CheckIcon, ChevronLeftIcon } from "../components/Icon";
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const PRIMARY = "#2FA8FF";
-const SUCCESS = "#22C55E";
-const DANGER = "#EF4444";
-const SURFACE_INFO = "#DFEEFE";
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const PRIMARY = "var(--c-primary)";
+const SUCCESS = "var(--c-success)";
+const DANGER = "var(--c-danger)";
+const SURFACE_INFO = "var(--c-primary-fade)";
 
 function GearIcon() {
   return (
@@ -146,7 +146,7 @@ export default function ChangePasswordPage() {
           </div>
           <div
             className="text-[14px] leading-snug pt-0.5"
-            style={{ color: "#1E3A60" }}
+            style={{ color: TEXT }}
           >
             Рекомендуем менять пароль каждые 3 месяца. После сохранения вы
             выйдете со всех устройств.
@@ -229,9 +229,9 @@ export default function ChangePasswordPage() {
           <div
             className="rounded-[14px] px-3 py-2 text-[13px]"
             style={{
-              background: "#FEF2F2",
+              background: "var(--c-danger-fade)",
               color: DANGER,
-              border: `1px solid ${DANGER}33`,
+              border: `1px solid rgba(239,68,68,0.3)`,
             }}
           >
             {error}
@@ -261,8 +261,8 @@ export default function ChangePasswordPage() {
                   opacity: loading ? 0.7 : 1,
                 }
               : {
-                  background: "#E7EAF0",
-                  color: "#9AA3B2",
+                  background: BORDER,
+                  color: "var(--c-muted-soft)",
                 }
           }
         >
@@ -307,7 +307,7 @@ function PasswordField({
         className="rounded-[18px] px-[18px] pt-3 pb-3"
         style={{
           background: SURFACE,
-          border: `1px solid ${error ? DANGER + "55" : BORDER}`,
+          border: `1px solid ${error ? "rgba(239,68,68,0.4)" : BORDER}`,
         }}
       >
         <div

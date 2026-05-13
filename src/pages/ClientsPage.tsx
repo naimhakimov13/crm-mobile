@@ -2,17 +2,17 @@ import { useMemo, useState } from "react";
 import { clients } from "../data/mock";
 import { formatMoney } from "../utils/format";
 import { PlusIcon, SearchIcon } from "../components/Icon";
+import { useTheme } from "../theme/ThemeContext";
 import type { Client } from "../data/types";
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const PRIMARY = "#2FA8FF";
-const SUCCESS = "#22C55E";
-const DANGER = "#EF4444";
-const WARN = "#F59E0B";
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const PRIMARY = "var(--c-primary)";
+const SUCCESS = "var(--c-success)";
+const DANGER = "var(--c-danger)";
 
 const FILTERS: Array<"Все" | Client["type"]> = [
   "Все",
@@ -22,7 +22,7 @@ const FILTERS: Array<"Все" | Client["type"]> = [
 ];
 
 const tagStyle: Record<Client["type"], { bg: string; fg: string }> = {
-  Партнёр: { bg: WARN + "22", fg: WARN },
+  Партнёр: { bg: "rgba(245,158,11,0.18)", fg: "var(--c-warn)" },
   Опт: { bg: "rgba(47,168,255,0.18)", fg: PRIMARY },
   Розница: { bg: BORDER, fg: MUTED },
 };
@@ -46,6 +46,7 @@ function hueFor(seed: string) {
 }
 
 export default function ClientsPage() {
+  const { dark } = useTheme();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Все");
 
@@ -156,8 +157,12 @@ export default function ClientsPage() {
               <div
                 className="w-[46px] h-[46px] rounded-full shrink-0 flex items-center justify-center text-[14px] font-semibold"
                 style={{
-                  background: `hsl(${hue}, 70%, 94%)`,
-                  color: `hsl(${hue}, 55%, 38%)`,
+                  background: dark
+                    ? `hsl(${hue}, 30%, 18%)`
+                    : `hsl(${hue}, 70%, 94%)`,
+                  color: dark
+                    ? `hsl(${hue}, 60%, 75%)`
+                    : `hsl(${hue}, 55%, 38%)`,
                 }}
               >
                 {initials(c.name) || "?"}

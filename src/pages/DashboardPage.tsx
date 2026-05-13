@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { useTheme, type ThemeTokens } from "../theme/ThemeContext";
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -78,17 +79,6 @@ const topProducts: Product[] = [
   { name: "Кофе зерновой 1кг", sold: 98, share: 0.48 },
 ];
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const PRIMARY = "#2FA8FF";
-const PRIMARY_SOFT = "rgba(47,168,255,0.18)";
-const SUCCESS = "#22C55E";
-const WARN = "#F59E0B";
-const DANGER = "#EF4444";
-
 function todayLabel() {
   const d = new Date();
   const day = d.getDate();
@@ -116,15 +106,21 @@ function IconButton({
   to,
   onClick,
   ariaLabel,
+  t,
 }: {
   children: React.ReactNode;
   to?: string;
   onClick?: () => void;
   ariaLabel: string;
+  t: ThemeTokens;
 }) {
   const cls =
-    "w-10 h-10 rounded-[12px] grid place-items-center text-ink-900 active:scale-95 transition-transform";
-  const style = { background: SURFACE, border: `1px solid ${BORDER}` };
+    "w-10 h-10 rounded-[12px] grid place-items-center active:scale-95 transition-transform";
+  const style = {
+    background: t.surface,
+    border: `1px solid ${t.border}`,
+    color: t.text,
+  };
   if (to) {
     return (
       <Link to={to} className={cls} style={style} aria-label={ariaLabel}>
@@ -145,19 +141,19 @@ function IconButton({
   );
 }
 
-function KPICard({ k }: { k: Kpi }) {
-  const color = k.up ? SUCCESS : DANGER;
+function KPICard({ k, t }: { k: Kpi; t: ThemeTokens }) {
+  const color = k.up ? t.success : t.danger;
   return (
     <div
       className="rounded-[14px] px-4 py-3.5 flex flex-col gap-1.5"
-      style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+      style={{ background: t.surface, border: `1px solid ${t.border}` }}
     >
-      <div className="text-[12.5px] font-medium" style={{ color: MUTED }}>
+      <div className="text-[12.5px] font-medium" style={{ color: t.muted }}>
         {k.label}
       </div>
       <div
         className="text-[22px] font-bold tracking-[-0.4px]"
-        style={{ color: TEXT }}
+        style={{ color: t.text }}
       >
         {k.value}
       </div>
@@ -233,12 +229,13 @@ function ChevronDown({ color }: { color: string }) {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const t = useTheme();
   const displayName = user?.name || user?.email || "Гость";
   const firstName = displayName.split(/[\s@.]/)[0];
   const initial = displayName[0].toUpperCase();
 
   return (
-    <div className="min-h-full" style={{ background: BG }}>
+    <div className="min-h-full" style={{ background: t.bg }}>
       <div className="flex items-center justify-between px-5 pt-6 pb-4">
         <Link
           to="/profile"
@@ -246,27 +243,30 @@ export default function DashboardPage() {
         >
           <Avatar initial={initial} />
           <div className="min-w-0">
-            <div className="text-[12px] font-medium" style={{ color: MUTED }}>
+            <div className="text-[12px] font-medium" style={{ color: t.muted }}>
               Доброе утро,
             </div>
             <div
               className="text-[15px] font-semibold truncate"
-              style={{ color: TEXT }}
+              style={{ color: t.text }}
             >
               {firstName}
             </div>
           </div>
         </Link>
         <div className="flex items-center gap-2">
-          <IconButton ariaLabel="Поиск">
+          <IconButton t={t} ariaLabel="Поиск">
             <SearchIcon size={18} />
           </IconButton>
-          <IconButton to="/notifications" ariaLabel="Уведомления">
+          <IconButton t={t} to="/notifications" ariaLabel="Уведомления">
             <div className="relative">
               <BellIcon size={18} />
               <span
                 className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
-                style={{ background: DANGER, border: `1.5px solid ${SURFACE}` }}
+                style={{
+                  background: t.danger,
+                  border: `1.5px solid ${t.surface}`,
+                }}
               />
             </div>
           </IconButton>
@@ -277,11 +277,11 @@ export default function DashboardPage() {
         <div>
           <h1
             className="m-0 text-[26px] font-bold tracking-[-0.5px]"
-            style={{ color: TEXT }}
+            style={{ color: t.text }}
           >
             Статистика
           </h1>
-          <div className="text-[13px] mt-1" style={{ color: MUTED }}>
+          <div className="text-[13px] mt-1" style={{ color: t.muted }}>
             {todayLabel()}
           </div>
         </div>
@@ -289,44 +289,44 @@ export default function DashboardPage() {
           type="button"
           className="h-8 px-3 rounded-[10px] text-[13px] font-medium flex items-center gap-1.5"
           style={{
-            background: SURFACE,
-            border: `1px solid ${BORDER}`,
-            color: TEXT,
+            background: t.surface,
+            border: `1px solid ${t.border}`,
+            color: t.text,
           }}
         >
-          День <ChevronDown color={MUTED} />
+          День <ChevronDown color={t.muted} />
         </button>
       </div>
 
       <div className="px-5 grid grid-cols-2 gap-2.5">
         {kpis.map((k) => (
-          <KPICard key={k.label} k={k} />
+          <KPICard key={k.label} k={k} t={t} />
         ))}
       </div>
 
       <div className="px-5 pt-4">
         <div
           className="rounded-[14px] px-[18px] pt-4 pb-3.5"
-          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+          style={{ background: t.surface, border: `1px solid ${t.border}` }}
         >
           <div className="flex items-baseline justify-between mb-3.5">
             <div>
               <div
                 className="text-[12.5px] font-medium"
-                style={{ color: MUTED }}
+                style={{ color: t.muted }}
               >
                 Выручка за неделю
               </div>
               <div
                 className="text-[20px] font-bold mt-0.5"
-                style={{ color: TEXT }}
+                style={{ color: t.text }}
               >
                 1 842 600 ₽
               </div>
             </div>
             <div
               className="text-[12px] font-semibold flex items-center gap-0.5"
-              style={{ color: SUCCESS }}
+              style={{ color: t.success }}
             >
               <ArrowUpIcon size={12} strokeWidth={2.5} />
               +18.2%
@@ -344,13 +344,15 @@ export default function DashboardPage() {
                     style={{
                       height: `${v * 100}%`,
                       background:
-                        i === spark.length - 1 ? PRIMARY : PRIMARY_SOFT,
+                        i === spark.length - 1
+                          ? t.primary
+                          : t.primaryFadeStrong,
                     }}
                   />
                 </div>
                 <div
                   className="text-[10.5px] font-medium"
-                  style={{ color: MUTED }}
+                  style={{ color: t.muted }}
                 >
                   {weekDays[i]}
                 </div>
@@ -360,30 +362,30 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <Section title="Последние операции" linkTo="/operations">
+      <Section t={t} title="Последние операции" linkTo="/operations">
         <div
           className="rounded-[14px] overflow-hidden"
-          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+          style={{ background: t.surface, border: `1px solid ${t.border}` }}
         >
           {recentOps.map((op, i) => {
             const color =
               op.status === "success"
-                ? SUCCESS
+                ? t.success
                 : op.status === "warn"
-                  ? WARN
-                  : MUTED;
+                  ? t.warn
+                  : t.muted;
             const amtColor =
               op.status === "success"
-                ? SUCCESS
+                ? t.success
                 : op.status === "warn"
-                  ? DANGER
-                  : TEXT;
+                  ? t.danger
+                  : t.text;
             return (
               <div
                 key={op.id}
                 className="flex items-center gap-3 px-4 py-3"
                 style={{
-                  borderTop: i === 0 ? "none" : `1px solid ${BORDER}`,
+                  borderTop: i === 0 ? "none" : `1px solid ${t.border}`,
                 }}
               >
                 <div
@@ -395,13 +397,13 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <div
                     className="text-[14.5px] font-semibold truncate"
-                    style={{ color: TEXT }}
+                    style={{ color: t.text }}
                   >
                     {op.title}
                   </div>
                   <div
                     className="text-[12.5px] mt-0.5 truncate"
-                    style={{ color: MUTED }}
+                    style={{ color: t.muted }}
                   >
                     {op.who} · {op.when}
                   </div>
@@ -418,42 +420,42 @@ export default function DashboardPage() {
         </div>
       </Section>
 
-      <Section title="Топ товары" linkTo="/products">
+      <Section t={t} title="Топ товары" linkTo="/products">
         <div
           className="rounded-[14px] px-4"
-          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+          style={{ background: t.surface, border: `1px solid ${t.border}` }}
         >
           {topProducts.map((p, i) => (
             <div
               key={p.name}
               className="py-3"
               style={{
-                borderTop: i === 0 ? "none" : `1px solid ${BORDER}`,
+                borderTop: i === 0 ? "none" : `1px solid ${t.border}`,
               }}
             >
               <div className="flex items-baseline justify-between mb-2 gap-3">
                 <div
                   className="text-[14px] font-medium truncate"
-                  style={{ color: TEXT }}
+                  style={{ color: t.text }}
                 >
                   {p.name}
                 </div>
                 <div
                   className="text-[13px] tabular-nums shrink-0"
-                  style={{ color: MUTED }}
+                  style={{ color: t.muted }}
                 >
                   {p.sold} шт.
                 </div>
               </div>
               <div
                 className="h-1 rounded-full overflow-hidden"
-                style={{ background: BORDER }}
+                style={{ background: t.border }}
               >
                 <div
                   className="h-full rounded-full"
                   style={{
                     width: `${p.share * 100}%`,
-                    background: PRIMARY,
+                    background: t.primary,
                   }}
                 />
               </div>
@@ -461,16 +463,17 @@ export default function DashboardPage() {
           ))}
         </div>
       </Section>
-
     </div>
   );
 }
 
 function Section({
+  t,
   title,
   linkTo,
   children,
 }: {
+  t: ThemeTokens;
   title: string;
   linkTo?: string;
   children: React.ReactNode;
@@ -480,7 +483,7 @@ function Section({
       <div className="flex items-baseline justify-between mb-2.5">
         <h3
           className="m-0 text-[16px] font-semibold"
-          style={{ color: TEXT }}
+          style={{ color: t.text }}
         >
           {title}
         </h3>
@@ -488,7 +491,7 @@ function Section({
           <Link
             to={linkTo}
             className="text-[13px] font-medium flex items-center gap-0.5"
-            style={{ color: PRIMARY }}
+            style={{ color: t.primary }}
           >
             Все <ChevronRightIcon size={14} />
           </Link>

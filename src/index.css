@@ -8,6 +8,15 @@
   background: #f4f6fa;
 }
 
+:root.dark {
+  color: #f4f7fb;
+  background: #0a0e14;
+}
+
+:root.dark body {
+  background: #0a0e14;
+}
+
 html,
 body,
 #root {
@@ -268,4 +277,74 @@ body {
   .liquid-glass {
     background: rgba(255, 255, 255, 0.92);
   }
+}
+
+:root.dark .app-frame {
+  background: #0a0e14;
+}
+
+:root.dark .app-frame::before,
+:root.dark .app-frame::after {
+  opacity: 0.18;
+}
+
+:root.dark .card {
+  background: linear-gradient(180deg, rgba(20, 26, 35, 0.92) 0%, rgba(20, 26, 35, 0.78) 100%);
+  border-color: #1f2933;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.02) inset,
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 10px 24px -12px rgba(0, 0, 0, 0.5);
+  color: #f4f7fb;
+}
+
+:root.dark .card::before {
+  background: radial-gradient(120% 60% at 50% -20%, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 60%);
+}
+
+:root.dark .input {
+  background: rgba(20, 26, 35, 0.92);
+  border-color: #1f2933;
+  color: #f4f7fb;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+:root.dark .input::placeholder {
+  color: #5b6473;
+}
+
+:root.dark .page-header-glass {
+  background: linear-gradient(180deg, rgba(10, 14, 20, 0.88) 0%, rgba(10, 14, 20, 0.55) 100%);
+}
+
+:root.dark .chip-glass {
+  background: linear-gradient(180deg, rgba(20, 26, 35, 0.78) 0%, rgba(20, 26, 35, 0.55) 100%);
+  border-color: #1f2933;
+  color: #f4f7fb;
+}
+
+:root.dark .liquid-glass {
+  background: linear-gradient(180deg, rgba(20, 26, 35, 0.78) 0%, rgba(20, 26, 35, 0.55) 100%);
+  border-color: #1f2933;
+}
+
+:root.dark .glass-segmented {
+  background: linear-gradient(180deg, rgba(27, 34, 44, 0.7) 0%, rgba(27, 34, 44, 0.45) 100%);
+}
+
+:root.dark .glass-segmented-item {
+  color: #8b95a5;
+}
+
+:root.dark .glass-segmented-item--active {
+  background: linear-gradient(180deg, rgba(31, 41, 55, 0.95) 0%, rgba(31, 41, 55, 0.75) 100%);
+  color: #f4f7fb;
+}
+
+:root.dark .btn-glass {
+  background: linear-gradient(180deg, rgba(20, 26, 35, 0.78) 0%, rgba(20, 26, 35, 0.55) 100%);
+  border-color: #1f2933;
 }

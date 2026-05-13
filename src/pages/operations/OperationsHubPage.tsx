@@ -22,14 +22,19 @@ type UnifiedOp = {
   route: string;
 };
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const PRIMARY = "#2FA8FF";
-const WARN = "#F59E0B";
-const SUCCESS = "#22C55E";
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const PRIMARY = "var(--c-primary)";
+const WARN = "var(--c-warn)";
+const SUCCESS = "var(--c-success)";
+
+const PRIMARY_FADE = "var(--c-primary-fade)";
+const WARN_FADE = "var(--c-warn-fade)";
+const SUCCESS_FADE = "var(--c-success-fade)";
+const MUTED_FADE = "rgba(91,104,120,0.18)";
 
 const TABS = ["Все", "Заказы", "Возвраты", "Склад"] as const;
 type Tab = (typeof TABS)[number];
@@ -42,6 +47,16 @@ function colorFor(type: OpType) {
       : type === "transfer"
         ? SUCCESS
         : MUTED;
+}
+
+function fadeFor(type: OpType) {
+  return type === "order"
+    ? PRIMARY_FADE
+    : type === "refund"
+      ? WARN_FADE
+      : type === "transfer"
+        ? SUCCESS_FADE
+        : MUTED_FADE;
 }
 
 function CartIcon({ color }: { color: string }) {
@@ -377,6 +392,7 @@ export default function OperationsHubPage() {
             >
               {ops.map((op, i) => {
                 const c = colorFor(op.type);
+                const cFade = fadeFor(op.type);
                 return (
                   <button
                     key={op.id}
@@ -389,7 +405,7 @@ export default function OperationsHubPage() {
                   >
                     <div
                       className="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center shrink-0"
-                      style={{ background: c + "1f" }}
+                      style={{ background: cFade }}
                     >
                       <OpIcon type={op.type} color={c} />
                     </div>
@@ -418,7 +434,7 @@ export default function OperationsHubPage() {
                         <span
                           className="shrink-0 text-[10.5px] font-semibold"
                           style={{
-                            background: c + "1a",
+                            background: cFade,
                             color: c,
                             padding: "2px 7px",
                             borderRadius: 4,

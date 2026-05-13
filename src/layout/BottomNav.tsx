@@ -6,6 +6,7 @@ import {
   StorageIcon,
   UsersIcon,
 } from "../components/Icon";
+import { useTheme } from "../theme/ThemeContext";
 import type { ComponentType, SVGProps } from "react";
 
 type Tab = {
@@ -22,15 +23,11 @@ const tabs: Tab[] = [
   { to: "/operations", label: "Операции", Icon: SwapIcon },
 ];
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const PRIMARY = "#2FA8FF";
-const MUTED = "#5B6878";
-
 const visibleOn = new Set(tabs.map((t) => t.to));
 
 export function BottomNav() {
   const location = useLocation();
+  const t = useTheme();
   if (!visibleOn.has(location.pathname)) return null;
 
   return (
@@ -41,10 +38,10 @@ export function BottomNav() {
         paddingTop: 8,
         paddingLeft: 8,
         paddingRight: 8,
-        background: SURFACE + "ee",
+        background: t.surface + "ee",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
         backdropFilter: "blur(20px) saturate(180%)",
-        borderTop: `1px solid ${BORDER}`,
+        borderTop: `1px solid ${t.border}`,
       }}
     >
       <ul className="flex justify-around">
@@ -56,7 +53,7 @@ export function BottomNav() {
               className="flex-1 flex flex-col items-center gap-[3px] py-1.5 px-1 bg-transparent border-0"
             >
               {({ isActive }) => {
-                const color = isActive ? PRIMARY : MUTED;
+                const color = isActive ? t.primary : t.muted;
                 return (
                   <>
                     <Icon

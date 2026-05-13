@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProducts } from "../data/ProductsContext";
+import { useTheme } from "../theme/ThemeContext";
 import { storages } from "../data/mock";
 import { formatMoney } from "../utils/format";
 import {
@@ -10,14 +11,18 @@ import {
   StorageIcon,
 } from "../components/Icon";
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const SUCCESS = "#22C55E";
-const WARN = "#F59E0B";
-const DANGER = "#EF4444";
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const SUCCESS = "var(--c-success)";
+const WARN = "var(--c-warn)";
+const DANGER = "var(--c-danger)";
+
+const SUCCESS_FADE = "var(--c-success-fade)";
+const WARN_FADE = "var(--c-warn-fade)";
+const DANGER_FADE = "var(--c-danger-fade)";
 
 const MONO =
   "ui-monospace, SFMono-Regular, Menlo, monospace";
@@ -101,6 +106,7 @@ export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { products } = useProducts();
+  const { dark } = useTheme();
   const product = products.find((p) => p.id === id);
 
   const sales = useMemo(
@@ -149,6 +155,7 @@ export default function ProductDetailPage() {
   const out = p.stock === 0;
   const low = !out && p.stock <= 12;
   const statusColor = out ? DANGER : low ? WARN : SUCCESS;
+  const statusFade = out ? DANGER_FADE : low ? WARN_FADE : SUCCESS_FADE;
   const statusLabel = out
     ? "Нет в наличии"
     : low
@@ -195,8 +202,12 @@ export default function ProductDetailPage() {
           className="w-full relative overflow-hidden rounded-[14px] flex items-center justify-center"
           style={{
             aspectRatio: "4 / 3",
-            background: `hsl(${hue}, 35%, 93%)`,
-            color: `hsl(${hue}, 45%, 42%)`,
+            background: dark
+              ? `hsl(${hue}, 30%, 22%)`
+              : `hsl(${hue}, 35%, 93%)`,
+            color: dark
+              ? `hsl(${hue}, 55%, 75%)`
+              : `hsl(${hue}, 45%, 42%)`,
           }}
         >
           <div
@@ -234,7 +245,7 @@ export default function ProductDetailPage() {
           <div
             className="inline-flex items-center gap-1.5 rounded-full text-[12px] font-semibold"
             style={{
-              background: statusColor + "1a",
+              background: statusFade,
               color: statusColor,
               padding: "4px 10px",
             }}
@@ -333,8 +344,12 @@ export default function ProductDetailPage() {
                 <div
                   className="w-[34px] h-[34px] rounded-full shrink-0 flex items-center justify-center text-[12px] font-semibold"
                   style={{
-                    background: `hsl(${sHue}, 70%, 94%)`,
-                    color: `hsl(${sHue}, 55%, 38%)`,
+                    background: dark
+                      ? `hsl(${sHue}, 30%, 22%)`
+                      : `hsl(${sHue}, 70%, 94%)`,
+                    color: dark
+                      ? `hsl(${sHue}, 55%, 75%)`
+                      : `hsl(${sHue}, 55%, 38%)`,
                   }}
                 >
                   {initials(s.who) || "?"}

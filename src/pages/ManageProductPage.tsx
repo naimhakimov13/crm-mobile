@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProducts } from "../data/ProductsContext";
+import { useTheme } from "../theme/ThemeContext";
 import type { Currency, Product } from "../data/types";
 import { BoxIcon, ChevronLeftIcon } from "../components/Icon";
 
 type FormState = Omit<Product, "id"> & { id?: string };
 
-const SURFACE = "#FFFFFF";
-const BORDER = "#E7EAF0";
-const BG = "#F4F6FA";
-const TEXT = "#0E1726";
-const MUTED = "#5B6878";
-const PRIMARY = "#2FA8FF";
-const DANGER = "#EF4444";
+const SURFACE = "var(--c-surface)";
+const BORDER = "var(--c-border)";
+const BG = "var(--c-bg)";
+const TEXT = "var(--c-text)";
+const MUTED = "var(--c-muted)";
+const PRIMARY = "var(--c-primary)";
+const DANGER = "var(--c-danger)";
 
 const emptyDraft = (): FormState => ({
   sku: "",
@@ -39,6 +40,7 @@ export default function ManageProductPage() {
   const { productId } = useParams<{ productId?: string }>();
   const navigate = useNavigate();
   const { saveProduct, products } = useProducts();
+  const { dark, bg } = useTheme();
   const isNew = !productId;
 
   const [form, setForm] = useState<FormState>(emptyDraft);
@@ -135,8 +137,12 @@ export default function ManageProductPage() {
         <div
           className="w-[88px] h-[88px] rounded-[20px] mx-auto flex items-center justify-center relative overflow-hidden"
           style={{
-            background: `hsl(${hue}, 35%, 93%)`,
-            color: `hsl(${hue}, 45%, 42%)`,
+            background: dark
+              ? `hsl(${hue}, 30%, 22%)`
+              : `hsl(${hue}, 35%, 93%)`,
+            color: dark
+              ? `hsl(${hue}, 55%, 75%)`
+              : `hsl(${hue}, 45%, 42%)`,
           }}
         >
           <div
@@ -229,8 +235,7 @@ export default function ManageProductPage() {
       <div
         className="px-5 pt-5 pb-6 flex gap-2.5 sticky bottom-0"
         style={{
-          background:
-            "linear-gradient(180deg, rgba(244,246,250,0) 0%, rgba(244,246,250,1) 30%)",
+          background: `linear-gradient(180deg, transparent 0%, ${bg} 30%)`,
         }}
       >
         <button
@@ -309,7 +314,7 @@ function Field({
         className="rounded-[14px] px-[14px] py-2.5 flex flex-col gap-0.5"
         style={{
           background: SURFACE,
-          border: `1px solid ${error ? DANGER + "66" : BORDER}`,
+          border: `1px solid ${error ? "rgba(239,68,68,0.5)" : BORDER}`,
         }}
       >
         <div
