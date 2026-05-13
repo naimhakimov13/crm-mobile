@@ -23,8 +23,8 @@ export function PageHeader({
     <header
       className={
         isBrand
-          ? "sticky top-0 z-30 px-5 pt-12 pb-8 bg-brand-grad text-white rounded-b-[24px]"
-          : "sticky top-0 z-30 px-5 pt-12 pb-4 page-header-glass"
+          ? "sticky top-0 z-30 px-5 pt-5 pb-8 bg-brand-grad text-white rounded-b-[24px]"
+          : "sticky top-0 z-30 px-5 pt-5 pb-4 page-header-glass"
       }
     >
       <div className="flex items-center gap-3 min-h-[28px]">

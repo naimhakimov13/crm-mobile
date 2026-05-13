@@ -1,12 +1,102 @@
+import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProducts } from "../data/ProductsContext";
+import { storages } from "../data/mock";
 import { formatMoney } from "../utils/format";
 import {
   BoxIcon,
   ChevronLeftIcon,
   EditIcon,
+  StorageIcon,
 } from "../components/Icon";
-import { EmptyState } from "../components/EmptyState";
+
+const SURFACE = "#FFFFFF";
+const BORDER = "#E7EAF0";
+const BG = "#F4F6FA";
+const TEXT = "#0E1726";
+const MUTED = "#5B6878";
+const PRIMARY = "#2FA8FF";
+const SUCCESS = "#22C55E";
+const WARN = "#F59E0B";
+const DANGER = "#EF4444";
+
+const MONO =
+  "ui-monospace, SFMono-Regular, Menlo, monospace";
+
+function hueFor(seed: string) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return h % 360;
+}
+
+function GearIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+    </svg>
+  );
+}
+
+function IconButton({
+  onClick,
+  children,
+  ariaLabel,
+}: {
+  onClick?: () => void;
+  children: React.ReactNode;
+  ariaLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-10 h-10 rounded-[12px] grid place-items-center active:scale-95 transition-transform"
+      style={{
+        background: SURFACE,
+        border: `1px solid ${BORDER}`,
+        color: TEXT,
+      }}
+      aria-label={ariaLabel}
+    >
+      {children}
+    </button>
+  );
+}
+
+function initials(name: string) {
+  return name
+    .replace(/["«»()]/g, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+type Sale = { who: string; when: string; qty: number; amount: number };
+
+function buildSales(price: number): Sale[] {
+  const seeds: Array<{ who: string; when: string; qty: number }> = [
+    { who: "Алишер Каримов", when: "Сегодня · 14:22", qty: 4 },
+    { who: "ООО Город-Маркет", when: "Сегодня · 11:08", qty: 12 },
+    { who: "Дилнура Рахимова", when: "Вчера · 18:42", qty: 2 },
+    { who: "Бек Турсунов", when: "Вчера · 09:15", qty: 6 },
+  ];
+  return seeds.map((s) => ({ ...s, amount: price * s.qty }));
+}
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -14,30 +104,43 @@ export default function ProductDetailPage() {
   const { products } = useProducts();
   const product = products.find((p) => p.id === id);
 
+  const sales = useMemo(
+    () => (product ? buildSales(product.price) : []),
+    [product],
+  );
+
   if (!product) {
     return (
-      <div>
-        <div className="px-4 pt-6">
-          <div className="flex items-center justify-between gap-2">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="w-10 h-10 grid place-items-center rounded-full bg-white/70 backdrop-blur-xl border border-white/60 text-ink-700 active:scale-95 transition shadow-[0_4px_12px_-4px_rgba(14,23,38,0.15)]"
-              aria-label="Назад"
-            >
-              <ChevronLeftIcon size={20} />
-            </button>
-            <div className="text-[11px] font-semibold text-ink-500 uppercase tracking-[0.18em]">
-              Товар
-            </div>
-            <span className="w-10 h-10" />
-          </div>
+      <div className="min-h-full" style={{ background: BG }}>
+        <div className="flex items-center justify-between px-4 pt-6 pb-2">
+          <IconButton onClick={() => navigate(-1)} ariaLabel="Назад">
+            <ChevronLeftIcon size={20} />
+          </IconButton>
+          <div className="w-10 h-10" aria-hidden />
         </div>
-        <div className="px-4 mt-8">
-          <EmptyState
-            title="Товар не найден"
-            subtitle="Возможно, он был удалён"
-          />
+        <div className="px-5 pt-4">
+          <div
+            className="text-center rounded-[14px] py-12 px-5"
+            style={{
+              background: SURFACE,
+              border: `1px dashed ${BORDER}`,
+              color: MUTED,
+            }}
+          >
+            <div
+              className="w-12 h-12 rounded-[14px] mx-auto mb-3 flex items-center justify-center"
+              style={{ background: BORDER, color: MUTED }}
+            >
+              <BoxIcon size={22} />
+            </div>
+            <div
+              className="text-[15px] font-semibold mb-1"
+              style={{ color: TEXT }}
+            >
+              Товар не найден
+            </div>
+            <div className="text-[13px]">Возможно, он был удалён</div>
+          </div>
         </div>
       </div>
     );
@@ -46,169 +149,222 @@ export default function ProductDetailPage() {
   const p = product;
   const out = p.stock === 0;
   const low = !out && p.stock <= 12;
-  const stockPct = Math.max(0, Math.min(100, (p.stock / 240) * 100));
-  const stockTone = out
-    ? "text-danger"
+  const statusColor = out ? DANGER : low ? WARN : SUCCESS;
+  const statusLabel = out
+    ? "Нет в наличии"
     : low
-      ? "text-warning"
-      : "text-success";
-  const stockLabel = out ? "Нет в наличии" : low ? "Мало" : "В наличии";
-  const stockBar = out ? "#EF4444" : low ? "#F59E0B" : "#22C55E";
+      ? "Заканчивается"
+      : "В наличии";
+  const hue = hueFor(p.category || p.id);
+
+  const sold = sales.reduce((sum, s) => sum + s.qty, 0);
+  const revenue = sales.reduce((sum, s) => sum + s.amount, 0);
+  const revenueK = `${Math.round(revenue / 1000)}k`;
+
+  const stores = storages.slice(0, 3);
+  const distribution = stores.map((s, i, arr) => {
+    if (i === arr.length - 1) return { name: s.name, qty: 0 };
+    const share = i === 0 ? 0.6 : 0.3;
+    return { name: s.name, qty: Math.round(p.stock * share) };
+  });
+  distribution[distribution.length - 1].qty = Math.max(
+    0,
+    p.stock - distribution.slice(0, -1).reduce((s, x) => s + x.qty, 0),
+  );
 
   return (
-    <div>
-      <div className="px-4 pt-6">
-        <div className="flex items-center justify-between gap-2">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 grid place-items-center rounded-full bg-white/70 backdrop-blur-xl border border-white/60 text-ink-700 active:scale-95 transition shadow-[0_4px_12px_-4px_rgba(14,23,38,0.15)]"
-            aria-label="Назад"
-          >
-            <ChevronLeftIcon size={20} />
-          </button>
-          <div className="text-[11px] font-semibold text-ink-500 uppercase tracking-[0.18em]">
-            Товар
-          </div>
-          <button
-            type="button"
+    <div className="min-h-full" style={{ background: BG }}>
+      <div className="flex items-center justify-between px-4 pt-6 pb-2">
+        <IconButton onClick={() => navigate(-1)} ariaLabel="Назад">
+          <ChevronLeftIcon size={20} />
+        </IconButton>
+        <div className="flex gap-2">
+          <IconButton
             onClick={() => navigate(`/products/${p.id}/edit`)}
-            className="w-10 h-10 grid place-items-center rounded-full bg-white/70 backdrop-blur-xl border border-white/60 text-ink-700 active:scale-95 transition shadow-[0_4px_12px_-4px_rgba(14,23,38,0.15)]"
-            aria-label="Изменить"
+            ariaLabel="Изменить"
           >
             <EditIcon size={18} />
-          </button>
+          </IconButton>
+          <IconButton ariaLabel="Настройки">
+            <GearIcon />
+          </IconButton>
         </div>
       </div>
 
-      <div className="px-4 mt-8 flex flex-col items-center text-center">
-        <div className="relative">
+      <div className="px-5">
+        <div
+          className="w-full relative overflow-hidden rounded-[14px] flex items-center justify-center"
+          style={{
+            aspectRatio: "4 / 3",
+            background: `hsl(${hue}, 35%, 93%)`,
+            color: `hsl(${hue}, 45%, 42%)`,
+          }}
+        >
           <div
             aria-hidden
-            className="absolute inset-0 -m-3 rounded-3xl blur-2xl opacity-50"
+            className="absolute inset-0"
             style={{
-              background:
-                "radial-gradient(circle, rgba(63,189,255,0.55) 0%, rgba(63,189,255,0) 70%)",
+              backgroundImage:
+                "repeating-linear-gradient(135deg, transparent 0 16px, rgba(0,0,0,0.025) 16px 17px)",
             }}
           />
+          <BoxIcon size={72} strokeWidth={1.3} style={{ position: "relative" }} />
+        </div>
+      </div>
+
+      <div className="px-5 pt-[18px]">
+        <div
+          className="text-[12px] mb-1"
+          style={{ color: MUTED, fontFamily: MONO }}
+        >
+          {p.sku} · {p.category}
+        </div>
+        <h2
+          className="m-0 text-[22px] font-bold tracking-[-0.4px] leading-[1.2]"
+          style={{ color: TEXT }}
+        >
+          {p.name}
+        </h2>
+        <div className="flex items-baseline gap-3 mt-2 flex-wrap">
           <div
-            className="relative w-20 h-20 rounded-3xl bg-brand-grad text-white grid place-items-center"
+            className="text-[26px] font-bold tracking-[-0.6px] tabular-nums"
+            style={{ color: TEXT }}
+          >
+            {formatMoney(p.price, p.currency)}
+          </div>
+          <div
+            className="inline-flex items-center gap-1.5 rounded-full text-[12px] font-semibold"
             style={{
-              boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.6), 0 14px 32px -10px rgba(31,144,224,0.6), 0 4px 12px rgba(14,23,38,0.12)",
+              background: statusColor + "1a",
+              color: statusColor,
+              padding: "4px 10px",
             }}
           >
-            <BoxIcon size={36} />
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: statusColor }}
+            />
+            {statusLabel}
           </div>
         </div>
-        <div className="mt-4 text-[11px] uppercase tracking-[0.16em] text-ink-500">
-          {p.category}
-        </div>
-        <div className="mt-1.5 text-xl font-semibold text-ink-900 leading-tight tracking-tight">
-          {p.name}
-        </div>
-        <div className="text-xs text-ink-500 mt-1.5">SKU · {p.sku}</div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 md:px-3">
-        <section>
-          <div className="card">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-card p-3 bg-white/60 border border-white/60">
-                <div className="text-[11px] uppercase tracking-wider text-ink-500">
-                  Цена
-                </div>
-                <div className="text-xl font-bold text-ink-900 mt-1 tabular-nums">
-                  {formatMoney(p.price, p.currency)}
-                </div>
+      <div className="px-5 pt-[18px] grid grid-cols-3 gap-2.5">
+        {[
+          { label: "На складе", value: `${p.stock} ${p.unit}` },
+          { label: "Продано", value: `${sold} ${p.unit}` },
+          { label: "Выручка", value: `${revenueK} ${p.currency === "USD" ? "$" : p.currency === "RUB" ? "₽" : "сум"}` },
+        ].map((k) => (
+          <div
+            key={k.label}
+            className="rounded-[14px] py-3 px-2.5 text-center"
+            style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+          >
+            <div
+              className="text-[16px] font-bold tracking-[-0.3px] tabular-nums"
+              style={{ color: TEXT }}
+            >
+              {k.value}
+            </div>
+            <div
+              className="text-[11.5px] font-medium mt-0.5"
+              style={{ color: MUTED }}
+            >
+              {k.label}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="px-5 pt-5">
+        <h3
+          className="m-0 mb-2.5 text-[16px] font-semibold"
+          style={{ color: TEXT }}
+        >
+          Распределение по складам
+        </h3>
+        <div
+          className="rounded-[14px] py-1 px-4"
+          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+        >
+          {distribution.map((w, i) => (
+            <div
+              key={w.name}
+              className="py-3 flex items-center gap-2.5"
+              style={{
+                borderTop: i === 0 ? "none" : `1px solid ${BORDER}`,
+              }}
+            >
+              <StorageIcon size={16} style={{ color: MUTED }} />
+              <div className="flex-1 text-[14px] truncate" style={{ color: TEXT }}>
+                {w.name}
               </div>
-              <div className="rounded-card p-3 bg-white/60 border border-white/60">
-                <div className="text-[11px] uppercase tracking-wider text-ink-500">
-                  Остаток
-                </div>
-                <div className="text-xl font-bold text-ink-900 mt-1 tabular-nums">
-                  {p.stock}
-                  <span className="text-sm text-ink-500 font-medium ml-1">
-                    {p.unit}
-                  </span>
-                </div>
+              <div
+                className="text-[14px] font-semibold tabular-nums"
+                style={{ color: TEXT }}
+              >
+                {w.qty} {p.unit}
               </div>
             </div>
+          ))}
+        </div>
+      </div>
 
-            <div className="mt-4">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-ink-500">Уровень запаса</span>
-                <span className={`font-medium ${stockTone}`}>
-                  {stockLabel}
-                </span>
-              </div>
-              <div className="mt-1.5 h-1.5 rounded-full bg-ink-300/30 overflow-hidden">
+      <div className="px-5 pt-5 pb-6">
+        <h3
+          className="m-0 mb-2.5 text-[16px] font-semibold"
+          style={{ color: TEXT }}
+        >
+          Последние продажи
+        </h3>
+        <div
+          className="rounded-[14px] overflow-hidden"
+          style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+        >
+          {sales.map((s, i) => {
+            const sHue = hueFor(s.who);
+            return (
+              <div
+                key={i}
+                className="px-4 py-3 flex items-center gap-3"
+                style={{
+                  borderTop: i === 0 ? "none" : `1px solid ${BORDER}`,
+                }}
+              >
                 <div
-                  className="h-full rounded-full transition-[width] duration-500"
-                  style={{ width: `${stockPct}%`, background: stockBar }}
-                />
+                  className="w-[34px] h-[34px] rounded-full shrink-0 flex items-center justify-center text-[12px] font-semibold"
+                  style={{
+                    background: `hsl(${sHue}, 70%, 94%)`,
+                    color: `hsl(${sHue}, 55%, 38%)`,
+                  }}
+                >
+                  {initials(s.who) || "?"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="text-[14px] font-semibold truncate"
+                    style={{ color: TEXT }}
+                  >
+                    {s.who}
+                  </div>
+                  <div
+                    className="text-[12px] mt-px"
+                    style={{ color: MUTED }}
+                  >
+                    {s.when} · {s.qty} {p.unit}
+                  </div>
+                </div>
+                <div
+                  className="text-[14px] font-semibold tabular-nums shrink-0"
+                  style={{ color: TEXT }}
+                >
+                  {formatMoney(s.amount, p.currency)}
+                </div>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <div className="card">
-            <div className="font-semibold text-ink-900 mb-1">Информация</div>
-            <ul className="flex flex-col">
-              <DetailRow label="Категория" value={p.category} />
-              <DetailRow label="Артикул" value={p.sku} />
-              <DetailRow label="Единица" value={p.unit} />
-              <DetailRow label="Валюта" value={p.currency} last />
-            </ul>
-          </div>
-        </section>
-
-        <section className="md:col-span-2">
-          <div className="card">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="btn-glass flex-1"
-              >
-                Назад
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(`/products/${p.id}/edit`)}
-                className="btn-primary flex-1"
-              >
-                <EditIcon size={16} />
-                <span className="ml-1.5">Изменить</span>
-              </button>
-            </div>
-          </div>
-        </section>
+            );
+          })}
+        </div>
       </div>
     </div>
-  );
-}
-
-function DetailRow({
-  label,
-  value,
-  last,
-}: {
-  label: string;
-  value: string;
-  last?: boolean;
-}) {
-  return (
-    <li
-      className={`flex items-center justify-between gap-3 py-2.5 ${
-        last ? "" : "border-b border-ink-300/30"
-      }`}
-    >
-      <span className="text-sm text-ink-500">{label}</span>
-      <span className="text-sm font-medium text-ink-900 truncate text-right">
-        {value}
-      </span>
-    </li>
   );
 }

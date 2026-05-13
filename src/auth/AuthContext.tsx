@@ -13,6 +13,9 @@ type User = {
   name?: string;
   phone?: string;
   position?: string;
+  city?: string;
+  bio?: string;
+  twoFactor?: boolean;
 };
 
 type AuthContextValue = {

@@ -9,7 +9,6 @@ import {
   UsersIcon,
   WalletIcon,
 } from "../components/Icon";
-import { EmptyState } from "../components/EmptyState";
 import type { ComponentType, SVGProps } from "react";
 
 type NotifType = "info" | "success" | "warning" | "danger";
@@ -22,6 +21,24 @@ type Notification = {
   date: string;
   read: boolean;
   Icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
+};
+
+const SURFACE = "#FFFFFF";
+const BORDER = "#E7EAF0";
+const BG = "#F4F6FA";
+const TEXT = "#0E1726";
+const MUTED = "#5B6878";
+const MUTED_SOFT = "#B4BCC8";
+const PRIMARY = "#2FA8FF";
+const SUCCESS = "#22C55E";
+const WARN = "#F59E0B";
+const DANGER = "#EF4444";
+
+const toneColor: Record<NotifType, string> = {
+  info: PRIMARY,
+  success: SUCCESS,
+  warning: WARN,
+  danger: DANGER,
 };
 
 const initialNotifications: Notification[] = [
@@ -81,41 +98,18 @@ const initialNotifications: Notification[] = [
   },
 ];
 
-const tonePresets: Record<
-  NotifType,
-  { tile: string; ring: string; dot: string }
-> = {
-  info: {
-    tile: "linear-gradient(135deg, #3FBDFF 0%, #1FA8FF 100%)",
-    ring: "rgba(63,189,255,0.35)",
-    dot: "#1FA8FF",
-  },
-  success: {
-    tile: "linear-gradient(135deg, #34D399 0%, #16A34A 100%)",
-    ring: "rgba(34,197,94,0.35)",
-    dot: "#22C55E",
-  },
-  warning: {
-    tile: "linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)",
-    ring: "rgba(245,158,11,0.35)",
-    dot: "#F59E0B",
-  },
-  danger: {
-    tile: "linear-gradient(135deg, #FB7185 0%, #EF4444 100%)",
-    ring: "rgba(239,68,68,0.35)",
-    dot: "#EF4444",
-  },
-};
+const FILTERS = ["Все", "Непрочитанные", "Склад", "Финансы"] as const;
+type Filter = (typeof FILTERS)[number];
 
 function relativeTime(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.round(diff / 60000);
   if (m < 1) return "только что";
-  if (m < 60) return `${m} мин назад`;
+  if (m < 60) return `${m} мин`;
   const h = Math.round(m / 60);
-  if (h < 24) return `${h} ч назад`;
+  if (h < 24) return `${h} ч`;
   const d = Math.round(h / 24);
-  if (d < 7) return `${d} дн назад`;
+  if (d < 7) return `${d} дн`;
   return new Date(iso).toLocaleDateString("ru-RU", {
     day: "numeric",
     month: "short",
@@ -139,18 +133,32 @@ const bucketLabel: Record<"today" | "yesterday" | "earlier", string> = {
   earlier: "Ранее",
 };
 
+function matchFilter(n: Notification, f: Filter) {
+  if (f === "Все") return true;
+  if (f === "Непрочитанные") return !n.read;
+  if (f === "Склад") return n.Icon === BoxIcon;
+  if (f === "Финансы") return n.Icon === WalletIcon || n.Icon === SwapIcon;
+  return true;
+}
+
 export default function NotificationsPage() {
   const navigate = useNavigate();
   const [items, setItems] = useState<Notification[]>(initialNotifications);
+  const [filter, setFilter] = useState<Filter>("Все");
 
   const unreadCount = items.filter((n) => !n.read).length;
+
+  const visible = useMemo(
+    () => items.filter((n) => matchFilter(n, filter)),
+    [items, filter],
+  );
 
   const grouped = useMemo(() => {
     const buckets: Record<"today" | "yesterday" | "earlier", Notification[]> =
       { today: [], yesterday: [], earlier: [] };
-    for (const n of items) buckets[bucketOf(n.date)].push(n);
+    for (const n of visible) buckets[bucketOf(n.date)].push(n);
     return buckets;
-  }, [items]);
+  }, [visible]);
 
   function markAllRead() {
     setItems((prev) => prev.map((n) => ({ ...n, read: true })));
@@ -158,142 +166,218 @@ export default function NotificationsPage() {
 
   function toggleRead(id: string) {
     setItems((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n)),
     );
   }
 
   return (
-    <div>
-      <div className="px-4 pt-6">
-        <div className="flex items-center justify-between gap-2">
+    <div className="min-h-full" style={{ background: BG }}>
+      <div className="flex items-center justify-between px-5 pt-6 pb-3">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="w-10 h-10 rounded-full grid place-items-center active:scale-95 transition-transform"
+          style={{
+            background: SURFACE,
+            border: `1px solid ${BORDER}`,
+            color: TEXT,
+          }}
+          aria-label="Назад"
+        >
+          <ChevronLeftIcon size={20} />
+        </button>
+        <div
+          className="text-[16px] font-semibold tracking-[-0.2px]"
+          style={{ color: TEXT }}
+        >
+          Уведомления
+        </div>
+        {unreadCount > 0 ? (
           <button
             type="button"
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 grid place-items-center rounded-full bg-white/70 backdrop-blur-xl border border-white/60 text-ink-700 active:scale-95 transition shadow-[0_4px_12px_-4px_rgba(14,23,38,0.15)]"
-            aria-label="Назад"
+            onClick={markAllRead}
+            className="h-[34px] px-[14px] rounded-[10px] text-[14px] font-semibold bg-transparent border-0"
+            style={{ color: PRIMARY }}
           >
-            <ChevronLeftIcon size={20} />
+            Прочитать
           </button>
-          <div className="text-[11px] font-semibold text-ink-500 uppercase tracking-[0.18em]">
-            Уведомления
-          </div>
-          {unreadCount > 0 ? (
-            <button
-              type="button"
-              onClick={markAllRead}
-              className="w-10 h-10 grid place-items-center rounded-full bg-brand-grad text-white active:scale-95 transition shadow-[0_8px_18px_-6px_rgba(31,144,224,0.55)]"
-              aria-label="Отметить всё как прочитанное"
-            >
-              <CheckIcon size={20} />
-            </button>
-          ) : (
-            <span className="w-10 h-10" />
-          )}
-        </div>
+        ) : (
+          <span className="w-10" aria-hidden />
+        )}
       </div>
 
-      <div className="px-4 mt-6 flex flex-col items-center text-center">
-        <div className="relative">
-          <div
-            aria-hidden
-            className="absolute inset-0 -m-3 rounded-3xl blur-2xl opacity-50"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(63,189,255,0.55) 0%, rgba(63,189,255,0) 70%)",
-            }}
-          />
-          <div
-            className="relative w-16 h-16 rounded-3xl bg-brand-grad text-white grid place-items-center"
-            style={{
-              boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.6), 0 14px 32px -10px rgba(31,144,224,0.6), 0 4px 12px rgba(14,23,38,0.12)",
-            }}
-          >
-            <BellIcon size={28} />
-          </div>
-        </div>
-        <div className="mt-3 text-xl font-semibold text-ink-900 tracking-tight">
+      <div className="px-5 pt-2 pb-4">
+        <h1
+          className="m-0 text-[26px] font-bold tracking-[-0.5px]"
+          style={{ color: TEXT }}
+        >
           {unreadCount > 0
-            ? `${unreadCount} новых ${unreadCount === 1 ? "уведомление" : "уведомлений"}`
+            ? `${unreadCount} новых`
             : "Всё прочитано"}
-        </div>
-        <div className="text-xs text-ink-500 mt-1">
+        </h1>
+        <div className="text-[13px] mt-1" style={{ color: MUTED }}>
           {items.length} {items.length === 1 ? "запись" : "записей"} всего
         </div>
       </div>
 
-      {items.length === 0 ? (
-        <div className="px-4 mt-6">
-          <EmptyState
-            title="Нет уведомлений"
-            subtitle="Здесь появятся события вашего бизнеса"
-          />
+      <div
+        className="flex gap-2 px-5 pb-3.5 overflow-x-auto"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {FILTERS.map((f) => {
+          const active = f === filter;
+          return (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setFilter(f)}
+              className="shrink-0 h-8 px-3.5 rounded-full text-[13px] font-medium inline-flex items-center gap-1.5"
+              style={
+                active
+                  ? {
+                      background: PRIMARY,
+                      color: "#fff",
+                      boxShadow: "0 4px 10px rgba(47,168,255,0.25)",
+                    }
+                  : {
+                      background: SURFACE,
+                      border: `1px solid ${BORDER}`,
+                      color: TEXT,
+                    }
+              }
+            >
+              {f}
+              {f === "Непрочитанные" && unreadCount > 0 && (
+                <span
+                  className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10.5px] font-semibold"
+                  style={{
+                    background: active ? "rgba(255,255,255,0.25)" : PRIMARY,
+                    color: "#fff",
+                  }}
+                >
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {visible.length === 0 ? (
+        <div className="px-5 pb-6">
+          <div
+            className="text-center rounded-[14px] py-12 px-5"
+            style={{
+              background: SURFACE,
+              border: `1px dashed ${BORDER}`,
+              color: MUTED,
+            }}
+          >
+            <div
+              className="w-12 h-12 rounded-[14px] mx-auto mb-3 flex items-center justify-center"
+              style={{ background: BORDER, color: MUTED }}
+            >
+              <BellIcon size={22} />
+            </div>
+            <div className="text-[14px]">Нет уведомлений</div>
+          </div>
         </div>
       ) : (
-        <div className="mt-6 flex flex-col gap-5 md:px-3">
+        <div className="px-5 pb-6 flex flex-col gap-[18px]">
           {(["today", "yesterday", "earlier"] as const).map((bucket) =>
             grouped[bucket].length === 0 ? null : (
-              <section key={bucket}>
-                <div className="px-4 md:px-0 text-[11px] uppercase tracking-[0.16em] text-ink-500 mb-2">
+              <div key={bucket}>
+                <div
+                  className="text-[12px] font-semibold uppercase tracking-[0.6px] px-1 pb-2"
+                  style={{ color: MUTED }}
+                >
                   {bucketLabel[bucket]}
                 </div>
-                <div className="card p-0 overflow-hidden">
-                  <ul className="divide-y divide-ink-300/30">
-                    {grouped[bucket].map((n) => {
-                      const tone = tonePresets[n.type];
-                      const Icon = n.Icon;
-                      return (
-                        <li key={n.id}>
-                          <button
-                            type="button"
-                            onClick={() => toggleRead(n.id)}
-                            className="w-full text-left px-4 py-3 flex items-start gap-3 active:bg-white/40 transition-colors"
+                <div
+                  className="rounded-[14px] overflow-hidden"
+                  style={{
+                    background: SURFACE,
+                    border: `1px solid ${BORDER}`,
+                  }}
+                >
+                  {grouped[bucket].map((n, i) => {
+                    const c = toneColor[n.type];
+                    const Icon = n.Icon;
+                    return (
+                      <button
+                        key={n.id}
+                        type="button"
+                        onClick={() => toggleRead(n.id)}
+                        className="w-full text-left bg-transparent border-0 px-4 py-3 flex items-start gap-3 relative"
+                        style={{
+                          borderTop: i === 0 ? "none" : `1px solid ${BORDER}`,
+                          background: n.read
+                            ? "transparent"
+                            : "rgba(47,168,255,0.04)",
+                        }}
+                      >
+                        <div
+                          className="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center shrink-0"
+                          style={{ background: c + "1f", color: c }}
+                        >
+                          <Icon size={18} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-baseline justify-between gap-2">
+                            <div
+                              className="text-[14.5px] truncate"
+                              style={{
+                                color: TEXT,
+                                fontWeight: n.read ? 500 : 600,
+                              }}
+                            >
+                              {n.title}
+                            </div>
+                            <div
+                              className="text-[11.5px] shrink-0 tabular-nums"
+                              style={{ color: MUTED_SOFT }}
+                            >
+                              {relativeTime(n.date)}
+                            </div>
+                          </div>
+                          <div
+                            className="text-[12.5px] mt-[3px] line-clamp-2"
+                            style={{ color: MUTED }}
                           >
-                            <div className="relative flex-none">
-                              <div
-                                className="w-10 h-10 rounded-2xl text-white grid place-items-center"
-                                style={{
-                                  background: tone.tile,
-                                  boxShadow: `0 8px 18px -8px ${tone.ring}, inset 0 1px 0 rgba(255,255,255,0.45)`,
-                                }}
-                              >
-                                <Icon size={18} />
-                              </div>
-                              {!n.read && (
-                                <span
-                                  className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-2 ring-white"
-                                  style={{ background: tone.dot }}
-                                />
-                              )}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center justify-between gap-2">
-                                <div
-                                  className={`truncate ${
-                                    n.read
-                                      ? "font-medium text-ink-700"
-                                      : "font-semibold text-ink-900"
-                                  }`}
-                                >
-                                  {n.title}
-                                </div>
-                                <div className="text-[11px] text-ink-400 shrink-0 tabular-nums">
-                                  {relativeTime(n.date)}
-                                </div>
-                              </div>
-                              <div className="text-sm text-ink-500 mt-0.5 line-clamp-2">
-                                {n.body}
-                              </div>
-                            </div>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                            {n.body}
+                          </div>
+                        </div>
+                        {!n.read && (
+                          <span
+                            className="absolute top-3 right-3 w-2 h-2 rounded-full"
+                            style={{ background: c }}
+                            aria-hidden
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-              </section>
-            )
+              </div>
+            ),
           )}
+        </div>
+      )}
+
+      {unreadCount === 0 && items.length > 0 && (
+        <div
+          className="mx-5 mb-6 rounded-[14px] p-4 flex items-center gap-3"
+          style={{ background: SUCCESS + "14", color: TEXT }}
+        >
+          <div
+            className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{ background: SUCCESS, color: "#fff" }}
+          >
+            <CheckIcon size={18} strokeWidth={2.4} />
+          </div>
+          <div className="text-[13.5px]" style={{ color: MUTED }}>
+            Вы прочитали все уведомления
+          </div>
         </div>
       )}
     </div>
