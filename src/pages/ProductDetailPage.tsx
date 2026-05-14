@@ -117,7 +117,10 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-full" style={{ background: BG }}>
-        <div className="flex items-center justify-between px-4 pt-6 pb-2">
+        <div
+          className="sticky top-0 z-30 flex items-center justify-between px-4 pt-4 pb-2"
+          style={{ background: BG }}
+        >
           <IconButton onClick={() => navigate(-1)} ariaLabel="Назад">
             <ChevronLeftIcon size={20} />
           </IconButton>
@@ -180,7 +183,10 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-full" style={{ background: BG }}>
-      <div className="flex items-center justify-between px-4 pt-6 pb-2">
+      <div
+        className="sticky top-0 z-30 flex items-center justify-between px-4 pt-4 pb-2"
+        style={{ background: BG }}
+      >
         <IconButton onClick={() => navigate(-1)} ariaLabel="Назад">
           <ChevronLeftIcon size={20} />
         </IconButton>

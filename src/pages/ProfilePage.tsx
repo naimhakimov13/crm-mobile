@@ -142,7 +142,10 @@ export default function ProfilePage() {
       className="min-h-full flex flex-col relative"
       style={{ background: t.bg }}
     >
-      <div className="flex items-center justify-between px-5 pt-6 pb-3">
+      <div
+        className="sticky top-0 z-30 flex items-center justify-between px-5 pt-4 pb-3"
+        style={{ background: t.bg }}
+      >
         <button
           type="button"
           onClick={() => navigate(-1)}

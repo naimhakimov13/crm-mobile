@@ -103,7 +103,10 @@ export default function ManageProductPage() {
       className="min-h-full flex flex-col"
       style={{ background: BG }}
     >
-      <div className="flex items-center justify-between px-4 pt-6 pb-2">
+      <div
+        className="sticky top-0 z-30 flex items-center justify-between px-4 pt-4 pb-2"
+        style={{ background: BG }}
+      >
         <button
           type="button"
           onClick={() => navigate(-1)}

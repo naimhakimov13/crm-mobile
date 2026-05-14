@@ -236,7 +236,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-full" style={{ background: t.bg }}>
-      <div className="flex items-center justify-between px-5 pt-6 pb-4">
+      <div
+        className="sticky top-0 z-30 flex items-center justify-between px-5 pt-4 pb-4"
+        style={{ background: t.bg }}
+      >
         <Link
           to="/profile"
           className="flex items-center gap-3 min-w-0 active:opacity-80"

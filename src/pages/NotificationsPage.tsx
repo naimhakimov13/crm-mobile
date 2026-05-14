@@ -179,7 +179,10 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-full" style={{ background: BG }}>
-      <div className="flex items-center justify-between px-5 pt-6 pb-3">
+      <div
+        className="sticky top-0 z-30 flex items-center justify-between px-5 pt-4 pb-3"
+        style={{ background: BG }}
+      >
         <button
           type="button"
           onClick={() => navigate(-1)}

@@ -37,7 +37,10 @@ export default function StoragePage() {
 
   return (
     <div className="min-h-full" style={{ background: BG }}>
-      <div className="flex items-end justify-between px-5 pt-6 pb-4">
+      <div
+        className="sticky top-0 z-30 flex items-end justify-between px-5 pt-4 pb-4"
+        style={{ background: BG }}
+      >
         <div>
           <h1
             className="m-0 text-[26px] font-bold tracking-[-0.5px]"
