@@ -145,7 +145,7 @@ export default function ClientsPage() {
         })}
       </div>
 
-      <div className="px-5 pb-6 flex flex-col gap-2.5">
+      <div className="px-5 pb-1 flex flex-col gap-2.5">
         {visible.map((c) => {
           const debt = c.balance < 0;
           const positive = c.balance > 0;

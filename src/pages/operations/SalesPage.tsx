@@ -250,7 +250,7 @@ export default function SalesPage() {
         })}
       </div>
 
-      <div className="px-5 pb-6 flex flex-col gap-[18px]">
+      <div className="px-5 pb-1 flex flex-col gap-[18px]">
         {groups.map(([day, ops]) => (
           <div key={day}>
             <div

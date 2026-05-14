@@ -326,7 +326,7 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      <div className="px-5 pt-5 pb-6">
+      <div className="px-5 pt-5 pb-1">
         <h3
           className="m-0 mb-2.5 text-[16px] font-semibold"
           style={{ color: TEXT }}

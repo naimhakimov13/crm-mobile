@@ -244,7 +244,7 @@ export default function ChangePasswordPage() {
 
       <div className="flex-1" />
 
-      <div className="px-5 pt-6 pb-8">
+      <div className="px-5 pt-6 pb-3">
         <div
           className="text-center text-[13px] mb-3"
           style={{ color: MUTED }}

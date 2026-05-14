@@ -174,7 +174,7 @@ export default function ProductsPage() {
         })}
       </div>
 
-      <div className="px-5 pb-6 flex flex-col gap-2.5">
+      <div className="px-5 pb-1 flex flex-col gap-2.5">
         {visible.map((p) => {
           const s = statusOf(p);
           const color = statusColor(s);

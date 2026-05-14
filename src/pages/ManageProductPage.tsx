@@ -236,7 +236,7 @@ export default function ManageProductPage() {
       <div className="flex-1" />
 
       <div
-        className="px-5 pt-5 pb-6 flex gap-2.5 sticky bottom-0"
+        className="px-5 pt-5 pb-1 flex gap-2.5 sticky bottom-0"
         style={{
           background: `linear-gradient(180deg, transparent 0%, ${bg} 30%)`,
         }}

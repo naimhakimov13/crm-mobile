@@ -274,7 +274,7 @@ export default function NotificationsPage() {
       </div>
 
       {visible.length === 0 ? (
-        <div className="px-5 pb-6">
+        <div className="px-5 pb-1">
           <div
             className="text-center rounded-[14px] py-12 px-5"
             style={{
@@ -293,7 +293,7 @@ export default function NotificationsPage() {
           </div>
         </div>
       ) : (
-        <div className="px-5 pb-6 flex flex-col gap-[18px]">
+        <div className="px-5 pb-1 flex flex-col gap-[18px]">
           {(["today", "yesterday", "earlier"] as const).map((bucket) =>
             grouped[bucket].length === 0 ? null : (
               <div key={bucket}>

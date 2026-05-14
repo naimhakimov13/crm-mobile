@@ -482,7 +482,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="px-5 pt-5 last:pb-6">
+    <div className="px-5 pt-5 last:pb-1">
       <div className="flex items-baseline justify-between mb-2.5">
         <h3
           className="m-0 text-[16px] font-semibold"

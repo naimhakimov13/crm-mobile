@@ -97,7 +97,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col px-6 pt-[70px] pb-10"
+      className="min-h-screen w-full flex flex-col px-6 pt-[70px] pb-5"
       style={{ background: BG, color: TEXT }}
     >
       <div className="mt-10">

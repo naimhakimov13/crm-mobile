@@ -91,7 +91,7 @@ export default function StoragePage() {
         </div>
       </div>
 
-      <div className="px-5 pb-6 flex flex-col gap-2.5">
+      <div className="px-5 pb-1 flex flex-col gap-2.5">
         {visible.map((s) => (
           <button
             key={s.id}
